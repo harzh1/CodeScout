@@ -1,5 +1,5 @@
 #root {
-  max-width: 1280px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
@@ -39,4 +39,28 @@
 
 .read-the-docs {
   color: #888;
+}
+
+.container {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex-direction: column;
+  text-align: left;
+  gap: 2em;
+}
+
+.ratingContainer {
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  max-width: 100%;
+  scrollbar-width: none;
+}
+
+.ratings {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
 }

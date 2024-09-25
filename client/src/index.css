@@ -1,6 +1,7 @@
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
+  margin: 0;
   font-weight: 400;
 
   color-scheme: light dark;
@@ -46,9 +47,7 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
-button:hover {
-  border-color: #646cff;
-}
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -65,4 +64,20 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+/* Remove focus outlines from all clickable elements */
+button:focus,
+a:focus,
+[role="button"]:focus,
+[role="tab"]:focus,
+[role="menuitem"]:focus,
+[role="link"]:focus {
+  box-shadow: none !important; /* Remove any box shadow */
+  outline: none !important; /* Ensure no outline is applied */
+}
+
+/* Optionally, if you want to remove focus styles from all focusable elements */
+*:focus {
+  outline: none !important;
 }
