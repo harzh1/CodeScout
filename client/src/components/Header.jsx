@@ -1,7 +1,7 @@
 function Header() {
   return (
     <header>
-      <h1>Code Scout</h1>
+      <h1>CodeScout</h1>
     </header>
   );
 }
