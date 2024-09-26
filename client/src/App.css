@@ -64,3 +64,12 @@
   justify-content: center;
   gap: 1em;
 }
+
+
+.loginDiv{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: aqua;
+
+}
