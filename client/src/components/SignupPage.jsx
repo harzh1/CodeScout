@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Box, Button, FormControl, FormLabel, Heading, Input, Stack } from '@chakra-ui/react';
-import { SocialIcon } from 'react-social-icons';
+import { Box, Button, FormControl, FormLabel, Heading, Input, Stack, IconButton } from '@chakra-ui/react';
+import { FaGithub, FaGoogle } from 'react-icons/fa'; // Importing GitHub and Google icons
 
 const SignupPage = () => {
   const [firstName, setFirstName] = useState('');
@@ -10,6 +10,17 @@ const SignupPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Add your sign-up logic here
+  };
+
+  const handleGithubSignup = () => {
+    // GitHub sign-up logic here
+    window.location.href = 'https://github.com/login/oauth/authorize'; 
+  };
+
+  const handleGoogleSignup = () => {
+    // Google sign-up logic here
+    window.location.href = 'https://accounts.google.com/signin/oauth'; // Example URL
   };
 
   return (
@@ -18,7 +29,7 @@ const SignupPage = () => {
       marginLeft="auto"
       alignItems="center"
       justifyContent="center"
-      w="150%"
+      w="100%"
       borderRadius="md"
       borderWidth={0.1}
       bg="gray.200"
@@ -80,9 +91,22 @@ const SignupPage = () => {
             <Button type="submit" colorScheme="blue" width="full" mt={4}>
               Sign Up
             </Button>
-            <Box marginLeft="auto"  marginRight="auto"  display="flex" alignItems="center" justifyContent="centre" mt={4}>
-              <SocialIcon url="https://github.com" />
-              <SocialIcon url="https://google.com" />
+            <Box marginLeft="auto" marginRight="auto" display="flex" alignItems="center" justifyContent="center" mt={4}>
+              <IconButton
+                icon={<FaGithub />}
+                onClick={handleGithubSignup}
+                aria-label="Sign up with GitHub"
+                colorScheme="gray"
+                size="lg"
+                mr={4}
+              />
+              <IconButton
+                icon={<FaGoogle />}
+                onClick={handleGoogleSignup}
+                aria-label="Sign up with Google"
+                colorScheme="red"
+                size="lg"
+              />
             </Box>
           </Stack>
         </form>
