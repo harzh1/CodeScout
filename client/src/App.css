@@ -1,6 +1,6 @@
 #root {
-  max-width: 100%;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   padding: 2rem;
   text-align: center;
 }
@@ -63,4 +63,14 @@
   display: flex;
   justify-content: center;
   gap: 1em;
+}
+.navhead{
+  display : flex;
+  align-items: center;
+  justify-content:space-between;
+}
+.nav-links{
+  display : flex;
+  align-items: center;
+  justify-content:space-between;
 }
