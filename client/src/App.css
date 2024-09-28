@@ -64,6 +64,35 @@
   justify-content: center;
   gap: 1em;
 }
+
+.ladderRating {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: first baseline;
+}
+
+.selectRatings {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
+}
+
+.ratingSelector {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 1em;
+}
+
+.problemTable {
+  width: 100%;
+  padding: 16px;
+}
 .navhead {
   display: flex;
   align-items: center;
