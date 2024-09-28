@@ -1,4 +1,4 @@
-import { Box, Text } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import atcoderIcon from "../assets/atcoder.svg";
 import codeforcesIcon from "../assets/codeforces.svg";
 import codechefIcon from "../assets/codechef.png";
@@ -8,11 +8,11 @@ import RatingCard from "./RatingCard";
 function Ratings() {
   return (
     <>
-      <Text fontSize="2xl" fontWeight="bold" color="black">
+      {/* <Text fontSize="2xl" fontWeight="bold" color="black">
         Contest Ratings
-      </Text>
+      </Text> */}
 
-      <Box className="ratingContainer">
+      <Box className="ratingContainer" mt={5}>
         <div className="ratings">
           <RatingCard
             platformName="CODEFORCES"

@@ -45,10 +45,11 @@
   width: 100%;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   flex-direction: column;
   text-align: left;
   gap: 2em;
+  min-height: 85vh;
 }
 
 .ratingContainer {
@@ -64,22 +65,84 @@
   justify-content: center;
   gap: 1em;
 }
-.navhead{
-  display : flex;
-  align-items: center;
-  justify-content:space-between;
-}
-.nav-links{
-  display : flex;
-  align-items: center;
-  justify-content:space-between;
+
+.ladderRating {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: first baseline;
 }
 
+.selectRatings {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
+}
 
-.loginDiv{
+.ratingSelector {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 1em;
+}
+
+.problemTable {
+  width: 100%;
+  padding: 16px;
+}
+.navhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ladderRating {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: first baseline;
+}
+
+.selectRatings {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
+}
+
+.ratingSelector {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 1em;
+}
+
+.problemTable {
+  width: 100%;
+  padding: 16px;
+}
+
+.navlinks {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.loginDiv {
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: aqua;
-
 }
