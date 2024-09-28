@@ -139,3 +139,10 @@
   align-items: center;
   justify-content: space-between;
 }
+
+.loginDiv {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: aqua;
+}
