@@ -2,7 +2,6 @@ import {
   Button,
   SimpleGrid,
   Table,
-  TableCaption,
   TableContainer,
   Tbody,
   Td,
@@ -22,10 +21,6 @@ function Ladder() {
 
   return (
     <div>
-      <Text fontSize="2xl" fontWeight="bold" color="black">
-        Ladder
-      </Text>
-
       <div className="ladderRating">
         <div className="problemTable">
           <TableContainer w="100%" p={5}>
@@ -220,6 +215,13 @@ function Ladder() {
               </Button>
             ))}
           </SimpleGrid>
+
+          <Text fontSize="xl" color="blue.500">
+            Solved Problems : 3
+          </Text>
+          <Text fontSize="xl" color="blue.500">
+            Unsolved Problems : 97
+          </Text>
         </div>
       </div>
     </div>

@@ -45,10 +45,11 @@
   width: 100%;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   flex-direction: column;
   text-align: left;
   gap: 2em;
+  min-height: 85vh;
 }
 
 .ratingContainer {
@@ -131,4 +132,10 @@
 .problemTable {
   width: 100%;
   padding: 16px;
+}
+
+.navlinks {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }

@@ -1,0 +1,23 @@
+{
+  "name": "server",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node ./bin/www",
+    "devstart": "node --watch ./bin/www",
+    "serverstart": "SET DEBUG=server:* & npm run devstart"
+  },
+  "dependencies": {
+    "compression": "^1.7.4",
+    "cookie-parser": "~1.4.6",
+    "debug": "~4.3.7",
+    "express": "~4.21.0",
+    "express-async-handler": "^1.2.0",
+    "express-rate-limit": "^7.4.0",
+    "helmet": "^7.1.0",
+    "http-errors": "~2.0.0",
+    "luxon": "^3.5.0",
+    "morgan": "~1.10.0"
+  }
+}
