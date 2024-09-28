@@ -64,13 +64,42 @@
   justify-content: center;
   gap: 1em;
 }
-.navhead{
-  display : flex;
+.navhead {
+  display: flex;
   align-items: center;
-  justify-content:space-between;
+  justify-content: space-between;
 }
-.nav-links{
-  display : flex;
+.nav-links {
+  display: flex;
   align-items: center;
-  justify-content:space-between;
+  justify-content: space-between;
+}
+
+.ladderRating {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: first baseline;
+}
+
+.selectRatings {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
+}
+
+.ratingSelector {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 1em;
+}
+
+.problemTable {
+  width: 100%;
+  padding: 16px;
 }
