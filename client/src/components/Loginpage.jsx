@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Button, FormControl, FormLabel, Heading, Input, Stack, IconButton } from '@chakra-ui/react';
 import { FaGithub, FaGoogle } from 'react-icons/fa';
-import Header from './Header'; // Adjust the import path as necessary
+import Header from './Header'; 
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -25,7 +25,7 @@ const LoginPage = () => {
   return (
     <>
       <Header />
-      <Box mt={8} display="flex" alignItems="center" justifyContent="center" w="100%">
+      <Box mt={8} display="flex" alignItems="center" justifyContent="center" w="100%" style={{ backgroundColor: 'white' }}>
         <Box
           maxW="400px"
           width="100%"
