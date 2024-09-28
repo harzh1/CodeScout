@@ -64,6 +64,16 @@
   justify-content: center;
   gap: 1em;
 }
+.navhead{
+  display : flex;
+  align-items: center;
+  justify-content:space-between;
+}
+.nav-links{
+  display : flex;
+  align-items: center;
+  justify-content:space-between;
+}
 
 
 .loginDiv{
