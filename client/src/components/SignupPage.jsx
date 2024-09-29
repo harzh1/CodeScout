@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Box, Button, FormControl, FormLabel, Heading, Input, Stack, IconButton } from '@chakra-ui/react';
+import { Box, Button, FormControl, FormLabel, Heading, Input, Stack, IconButton, Center } from '@chakra-ui/react';
 import { FaGithub, FaGoogle } from 'react-icons/fa'; // Importing GitHub and Google icons
+import { NavLink} from "react-router-dom";
 
 const SignupPage = () => {
   const [firstName, setFirstName] = useState('');
@@ -25,15 +26,8 @@ const SignupPage = () => {
 
   return (
     <Box
-      display="flex"
-      marginLeft="auto"
-      alignItems="center"
-      justifyContent="center"
-      w="100%"
-      borderRadius="md"
-      borderWidth={0.1}
-      bg="gray.200"
-    >
+    mt={8} display="flex" alignItems="center" justifyContent="center" w="100%" style={{ backgroundColor: 'white' }}>
+    
       <Box
         width="100%"
         maxW="500px"
@@ -91,6 +85,11 @@ const SignupPage = () => {
             <Button type="submit" colorScheme="blue" width="full" mt={4}>
               Sign Up
             </Button>
+            <NavLink to="/Login">
+              <Button type="submit" colorScheme="blue" width="full" mt={5} variant="outline" >
+                Switch to Login
+              </Button>
+              </NavLink>
             <Box marginLeft="auto" marginRight="auto" display="flex" alignItems="center" justifyContent="center" mt={4}>
               <IconButton
                 icon={<FaGithub />}

@@ -1,15 +1,48 @@
 import React, { useState } from 'react';
 import { Box, Button, FormControl, FormLabel, Heading, Input, Stack, IconButton } from '@chakra-ui/react';
 import { FaGithub, FaGoogle } from 'react-icons/fa';
-import Header from './Header'; 
+import { NavLink, useNavigate } from "react-router-dom";
+
+const users = [
+  {
+    name: "John@gmail.com",
+    password: "J0hn$2024!"
+  },
+  {
+    name: "Alice@gmail.com",
+    password: "Alic3#2024!"
+  },
+  {
+    name: "Michael@gmail.com",
+    password: "M1ch@el2024!"
+  },
+  {
+    name: "Sarah@gmail.com",
+    password: "S4rah%2024!"
+  },
+  {
+    name: "dhruv@gmail.com",
+    password: "test123"
+  }
+];
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate(); // Hook to navigate programmatically
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Login logic here
+
+    // Check if email and password match
+    const user = users.find(user => user.name === email && user.password === password);
+    if (user) {
+      // Redirect to home page if credentials are correct
+      navigate('/');
+    } else {
+      // Handle incorrect login (optional)
+      alert('Invalid email or password');
+    }
   };
 
   const handleGithubLogin = () => {
@@ -23,8 +56,7 @@ const LoginPage = () => {
   };
 
   return (
-    <>
-      <Header />
+    <div style={{ minHeight: '100vh' }}>
       <Box mt={8} display="flex" alignItems="center" justifyContent="center" w="100%" style={{ backgroundColor: 'white' }}>
         <Box
           maxW="400px"
@@ -63,6 +95,11 @@ const LoginPage = () => {
               <Button type="submit" colorScheme="blue" width="full" mt={4}>
                 Login
               </Button>
+              <NavLink to="/signup">
+                <Button type="button" colorScheme="blue" width="full" mt={5} variant="outline">
+                  Switch to Sign up
+                </Button>
+              </NavLink>
               <Box display="flex" alignItems="center" justifyContent="center" mt={4}>
                 <IconButton
                   icon={<FaGithub />}
@@ -83,7 +120,7 @@ const LoginPage = () => {
           </form>
         </Box>
       </Box>
-    </>
+    </div>
   );
 };
 

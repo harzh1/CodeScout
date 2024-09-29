@@ -14,7 +14,7 @@ import {
   MenuGroup,
 } from "@chakra-ui/react";
 
-const NavLinks = () => {
+const NavLinks = ({ handleButtonClick }) => {
   const [activeButton, setActiveButton] = useState("Home");
   const location = useLocation(); // Get the current location
 
@@ -29,12 +29,12 @@ const NavLinks = () => {
       setActiveButton("About");
     } else if (path === "/Ratedquestions") {
       setActiveButton("RatedQuestions");
+    } else if (path === "/Login") {
+      setActiveButton("Login");
+    } else if (path === "/signup") {
+      setActiveButton("Signup");
     }
   }, [location]); // This effect runs every time the location changes
-
-  const handleButtonClick = (buttonName) => {
-    setActiveButton(buttonName);
-  };
 
   return (
     <>
@@ -48,33 +48,39 @@ const NavLinks = () => {
         </div>
         <div>
           <Stack direction="row" spacing={4} align="center" position={"relative"}>
-            <NavLink to={`/`}>
+            <NavLink to={`/`} onClick={() => handleButtonClick("Home")}>
               <Button
                 colorScheme="teal"
                 variant={activeButton === "Home" ? "solid" : "outline"}
-                onClick={() => handleButtonClick("Home")}
               >
                 Home
               </Button>
             </NavLink>
 
-            <NavLink to={`/About`}>
+            <NavLink to={`/About`} onClick={() => handleButtonClick("About")}>
               <Button
                 colorScheme="teal"
                 variant={activeButton === "About" ? "solid" : "outline"}
-                onClick={() => handleButtonClick("About")}
               >
                 About
               </Button>
             </NavLink>
 
-            <NavLink to={`/Ratedquestions`}>
+            <NavLink to={`/Ratedquestions`} onClick={() => handleButtonClick("RatedQuestions")}>
               <Button
                 colorScheme="teal"
                 variant={activeButton === "RatedQuestions" ? "solid" : "outline"}
-                onClick={() => handleButtonClick("RatedQuestions")}
               >
                 RatedQuestions
+              </Button>
+            </NavLink>
+            
+            <NavLink to={`/Login`} onClick={() => handleButtonClick("Login")}>
+              <Button
+                colorScheme="teal"
+                variant={activeButton === "Login" ? "solid" : "outline"}
+              >
+                Login/Signup
               </Button>
             </NavLink>
 
@@ -93,7 +99,7 @@ const NavLinks = () => {
                 <MenuGroup title="Profile">
                   <MenuItem>My Account</MenuItem>
                   <MenuItem>Settings</MenuItem>
-                  <MenuItem color="red.500">
+                  <MenuItem color="red.500"> 
                     Log Out
                     <Box as="span" ml="2">
                       <MdLogout />
