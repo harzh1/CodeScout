@@ -1,9 +1,10 @@
 import { Routes, Route } from "react-router-dom";
-import { useState, useEffect } from "react";
 import "./App.css";
 import Container from "./components/Container";
-import About from "./components/About";
+import Practice from "./components/Practice";
 import RatedQuestions from "./components/RatedQuestions";
+import NavLinks from "./components/NavLinks";
+import { Divider } from "@chakra-ui/react";
 import NavLinks from "./components/NavLinks";
 import LoginPage from "./components/Loginpage";
 import SignupPage from "./components/SignupPage"; // Import Signup component
