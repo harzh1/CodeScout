@@ -1,11 +1,11 @@
 import { Routes, Route } from "react-router-dom";
+import { useState, useEffect } from "react";
 import "./App.css";
 import Container from "./components/Container";
 import Practice from "./components/Practice";
 import RatedQuestions from "./components/RatedQuestions";
 import NavLinks from "./components/NavLinks";
 import { Divider } from "@chakra-ui/react";
-import NavLinks from "./components/NavLinks";
 import LoginPage from "./components/Loginpage";
 import SignupPage from "./components/SignupPage"; // Import Signup component
 import { useLocation } from "react-router-dom";
@@ -21,7 +21,7 @@ function App() {
     // Match the path with button names to set the active button
     if (path === "/") {
       setActiveButton("Home");
-    } else if (path === "/About") {
+    } else if (path === "/Practice") {
       setActiveButton("About");
     } else if (path === "/Ratedquestions") {
       setActiveButton("RatedQuestions");
@@ -46,9 +46,10 @@ function App() {
       ) : (
         <>
           <NavLinks handleButtonClick={()=>handleButtonClick}/>
+            <Divider />
           <Routes>
             <Route path="/" element={<Container />} />
-            <Route path="/About" element={<About />} />
+            <Route path="/Practice" element={<Practice />} />
             <Route path="/Ratedquestions" element={<RatedQuestions />} />
             <Route path="/signup" element={<SignupPage />} /> {/* Route for signup */}
           </Routes>

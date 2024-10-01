@@ -25,8 +25,8 @@ const NavLinks = ({ handleButtonClick }) => {
     // Match the path with button names to set the active button
     if (path === "/") {
       setActiveButton("Home");
-    } else if (path === "/About") {
-      setActiveButton("About");
+    } else if (path === "/Practice") {
+      setActiveButton("Practice");
     } else if (path === "/Ratedquestions") {
       setActiveButton("RatedQuestions");
     } else if (path === "/Login") {
@@ -57,12 +57,12 @@ const NavLinks = ({ handleButtonClick }) => {
               </Button>
             </NavLink>
 
-            <NavLink to={`/About`} onClick={() => handleButtonClick("About")}>
+            <NavLink to={`/Practice`} onClick={() => handleButtonClick("Practice")}>
               <Button
                 colorScheme="teal"
-                variant={activeButton === "About" ? "solid" : "outline"}
+                variant={activeButton === "Practice" ? "solid" : "outline"}
               >
-                About
+                Practice
               </Button>
             </NavLink>
 
