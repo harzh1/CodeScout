@@ -3,14 +3,30 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import cookieParser from "cookie-parser";
+import bodyParser from "body-parser";
 import logger from "morgan";
 import compression from "compression";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.js";
+import mongoose from "mongoose";
+
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
+
+mongoose.set("strictQuery", false);
+const dev_db_url =
+  "mongodb+srv://test1:pass1@cluster0.ehsax.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const mongoDB = dev_db_url;
+main().catch((err) => console.log(err));
+
+async function main() {
+  await mongoose.connect(mongoDB);
+  console.log("Connected to MongoDB");
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,28 +48,30 @@ app.use(
 
 app.use(logger("dev"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(compression()); //Compress all routes
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/", indexRouter);
-app.use("/users", usersRouter);
+// app.use("/", indexRouter);
+app.use("/api/users", usersRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
   next(createError(404));
 });
 
-// error handler
+// Error handler
 app.use((err, req, res, next) => {
-  // set locals, only providing error in development
+  // Set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
 
-  // render the error page
-  app.use((err, req, res, next) => {
-    res.status(err.status || 500).json({ error: err.message });
+  // Send the error response
+  res.status(err.status || 500);
+  res.json({
+    message: err.message,
+    error: req.app.get("env") === "development" ? err : {},
   });
 });
 
