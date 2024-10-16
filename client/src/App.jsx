@@ -52,6 +52,7 @@ function App() {
             <Route path="/" element={<Container />} />
             <Route path="/Practice" element={<Practice />} />
             <Route path="/Ratedquestions" element={<RatedQuestions />} />
+            <Route path="/ProfilePage" element={<ProfilePage />} />
             <Route path="/signup" element={<SignupPage />} /> {/* Route for signup */}
           </Routes>
         </>
