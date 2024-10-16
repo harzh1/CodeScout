@@ -27,10 +27,6 @@ const ProfilePage = ({ firstName, fetchUsernames, saveUsernames }) => {
     leetcode: "",
     codechef: "",
     atcoder: "",
-    codeforces: "",
-    leetcode: "",
-    codechef: "",
-    atcoder: "",
   });
   const [initialUsernames, setInitialUsernames] = useState(usernames);
   const { isOpen, onOpen, onClose } = useDisclosure();
