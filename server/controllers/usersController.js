@@ -56,7 +56,7 @@ export const signup = asyncHandler(async (req, res, next) => {
     token = jwt.sign(
       { userId: newUser.id, email: newUser.email },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "1m" }
     );
   } catch (error) {
     const err = new Error("Could not create user. Please try again.");
@@ -68,9 +68,10 @@ export const signup = asyncHandler(async (req, res, next) => {
 });
 
 export const login = asyncHandler(async (req, res, next) => {
+  console.log("Request body:", req.body);
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email: email });
+  const user = await User.findOne({ email });
   if (!user) {
     const err = new Error("Invalid email or password");
     err.status = 401;
@@ -99,7 +100,7 @@ export const login = asyncHandler(async (req, res, next) => {
     token = jwt.sign(
       { userId: user.id, email: user.email },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "1m" }
     );
   } catch (error) {
     const err = new Error("Could not log you in. Please try again.");

@@ -11,22 +11,19 @@ import rateLimit from "express-rate-limit";
 import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.js";
 import mongoose from "mongoose";
+import cors from "cors";
+import connectDB from "./connectDB.js";
 
 import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
 
-mongoose.set("strictQuery", false);
-const dev_db_url =
-  "mongodb+srv://test1:pass1@cluster0.ehsax.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-const mongoDB = dev_db_url;
-main().catch((err) => console.log(err));
+app.use(cors());
 
-async function main() {
-  await mongoose.connect(mongoDB);
-  console.log("Connected to MongoDB");
-}
+mongoose.set("strictQuery", false);
+
+connectDB();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
