@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -16,14 +16,19 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
 
-const ProfilePage = ({ firstName, onSignOut, fetchUsernames, saveUsernames }) => {
+const ProfilePage = ({
+  firstName,
+  onSignOut,
+  fetchUsernames,
+  saveUsernames,
+}) => {
   const [usernames, setUsernames] = useState({
-    codeforces: '',
-    leetcode: '',
-    codechef: '',
-    atcoder: '',
+    codeforces: "",
+    leetcode: "",
+    codechef: "",
+    atcoder: "",
   });
   const [initialUsernames, setInitialUsernames] = useState(usernames);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -73,7 +78,9 @@ const ProfilePage = ({ firstName, onSignOut, fetchUsernames, saveUsernames }) =>
 
         <TabPanels>
           <TabPanel>
-            <Heading size="md" mb={4}>Change Username</Heading>
+            <Heading size="md" mb={4}>
+              Change Username
+            </Heading>
             <Tabs variant="enclosed">
               <TabList>
                 <Tab>Codeforces</Tab>
@@ -87,28 +94,36 @@ const ProfilePage = ({ firstName, onSignOut, fetchUsernames, saveUsernames }) =>
                   <Input
                     placeholder="Codeforces Username"
                     value={usernames.codeforces}
-                    onChange={(e) => handleInputChange('codeforces', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("codeforces", e.target.value)
+                    }
                   />
                 </TabPanel>
                 <TabPanel>
                   <Input
                     placeholder="Leetcode Username"
                     value={usernames.leetcode}
-                    onChange={(e) => handleInputChange('leetcode', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("leetcode", e.target.value)
+                    }
                   />
                 </TabPanel>
                 <TabPanel>
                   <Input
                     placeholder="Codechef Username"
                     value={usernames.codechef}
-                    onChange={(e) => handleInputChange('codechef', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("codechef", e.target.value)
+                    }
                   />
                 </TabPanel>
                 <TabPanel>
                   <Input
                     placeholder="Atcoder Username"
                     value={usernames.atcoder}
-                    onChange={(e) => handleInputChange('atcoder', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("atcoder", e.target.value)
+                    }
                   />
                 </TabPanel>
               </TabPanels>
@@ -116,7 +131,7 @@ const ProfilePage = ({ firstName, onSignOut, fetchUsernames, saveUsernames }) =>
 
             <Button
               mt={4}
-              colorScheme={isChanged ? 'green' : 'gray'}
+              colorScheme={isChanged ? "green" : "gray"}
               onClick={handleSaveChanges}
               isDisabled={!isChanged}
             >
@@ -130,8 +145,12 @@ const ProfilePage = ({ firstName, onSignOut, fetchUsernames, saveUsernames }) =>
           </TabPanel>
 
           <TabPanel>
-            <Heading size="md" mb={4}>Delete Account</Heading>
-            <Button colorScheme="red" onClick={onOpen}>Delete Account</Button>
+            <Heading size="md" mb={4}>
+              Delete Account
+            </Heading>
+            <Button colorScheme="red" onClick={onOpen}>
+              Delete Account
+            </Button>
 
             <Modal isOpen={isOpen} onClose={onClose}>
               <ModalOverlay />
@@ -139,23 +158,35 @@ const ProfilePage = ({ firstName, onSignOut, fetchUsernames, saveUsernames }) =>
                 <ModalHeader>Delete Account</ModalHeader>
                 <ModalBody>All data will be wiped out. Are you sure?</ModalBody>
                 <ModalFooter>
-                  <Button colorScheme="red" mr={3} onClick={() => console.log('Account deleted')}>
+                  <Button
+                    colorScheme="red"
+                    mr={3}
+                    onClick={() => console.log("Account deleted")}
+                  >
                     Confirm
                   </Button>
-                  <Button variant="ghost" onClick={onClose}>Cancel</Button>
+                  <Button variant="ghost" onClick={onClose}>
+                    Cancel
+                  </Button>
                 </ModalFooter>
               </ModalContent>
             </Modal>
           </TabPanel>
 
           <TabPanel>
-            <Heading size="md" mb={4}>Contact Us</Heading>
+            <Heading size="md" mb={4}>
+              Contact Us
+            </Heading>
             <p>If you have any questions, reach out to support@website.com.</p>
           </TabPanel>
 
           <TabPanel>
-            <Heading size="md" mb={4}>Log Out</Heading>
-            <Button colorScheme="gray" onClick={onSignOut}>Log Out</Button>
+            <Heading size="md" mb={4}>
+              Log Out
+            </Heading>
+            <Button colorScheme="gray" onClick={onSignOut}>
+              Log Out
+            </Button>
           </TabPanel>
         </TabPanels>
       </Tabs>

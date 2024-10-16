@@ -7,13 +7,14 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
+  Text,
 } from "@chakra-ui/react";
 import ContestCard from "./ContestCard";
 import { isToday, isTomorrow, isAfter, addDays } from "date-fns";
 
 const API_URL = "https://clist.by/api/v4/contest/";
-const API_KEY = "cdd614b63ab9d21740d319924f980d0bdb28307f";
-const USERNAME = "test1";
+const API_KEY = "ebe0cb5ac2781b22caacabf0b90a8bb6a837a350";
+const USERNAME = "test2";
 
 const platformNames = {
   "leetcode.com": "LEETCODE",
@@ -32,29 +33,49 @@ function UpcomingContests() {
   useEffect(() => {
     const fetchContests = async () => {
       try {
-        const response = await fetch(
-          `${API_URL}?username=${USERNAME}&api_key=${API_KEY}&resource=leetcode.com,codeforces.com,codechef.com,atcoder.jp&upcoming=true&format=json`
+        // Fetch contests from all four platforms
+        const leetcodeResponse = await fetch(
+          `${API_URL}?username=${USERNAME}&api_key=${API_KEY}&resource=leetcode.com&upcoming=true&format=json`
+        );
+        const codeforcesResponse = await fetch(
+          `${API_URL}?username=${USERNAME}&api_key=${API_KEY}&resource=codeforces.com&upcoming=true&format=json`
+        );
+        const codechefResponse = await fetch(
+          `${API_URL}?username=${USERNAME}&api_key=${API_KEY}&resource=codechef.com&upcoming=true&format=json`
+        );
+        const atcoderResponse = await fetch(
+          `${API_URL}?username=${USERNAME}&api_key=${API_KEY}&resource=atcoder.jp&upcoming=true&format=json`
         );
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        // Check if any response is not ok
+        if (
+          !leetcodeResponse.ok ||
+          !codeforcesResponse.ok ||
+          !codechefResponse.ok ||
+          !atcoderResponse.ok
+        ) {
+          throw new Error("Error fetching contests from one or more platforms");
         }
 
-        const data = await response.json();
-        console.log("API Response:", data); // Log the API response for debugging
+        // Parse the JSON responses
+        const leetcodeData = await leetcodeResponse.json();
+        const codeforcesData = await codeforcesResponse.json();
+        const codechefData = await codechefResponse.json();
+        const atcoderData = await atcoderResponse.json();
 
-        if (!data.objects) {
-          throw new Error(
-            "Invalid API response: 'objects' property is missing"
-          );
-        }
+        // Combine contest data from all platforms
+        const combinedContests = [
+          ...(leetcodeData.objects || []),
+          ...(codeforcesData.objects || []),
+          ...(codechefData.objects || []),
+          ...(atcoderData.objects || []),
+        ];
 
-        const contestsData = data.objects;
         const today = [];
         const tomorrow = [];
         const later = [];
 
-        contestsData.forEach((contest) => {
+        combinedContests.forEach((contest) => {
           const startTime = new Date(contest.start);
           if (isToday(startTime)) {
             today.push(contest);
@@ -65,6 +86,7 @@ function UpcomingContests() {
           }
         });
 
+        // Sort contests by start time
         const sortByStartTime = (a, b) => new Date(a.start) - new Date(b.start);
         today.sort(sortByStartTime);
         tomorrow.sort(sortByStartTime);
@@ -95,46 +117,58 @@ function UpcomingContests() {
         />
         <TabPanels>
           <TabPanel>
-            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={5}>
-              {contests.today.map((contest) => (
-                <ContestCard
-                  key={contest.id}
-                  platformName={platformNames[contest.resource] || "UNKNOWN"}
-                  contestName={contest.event}
-                  registerLink={contest.href}
-                  startTime={contest.start}
-                  endTime={contest.end}
-                />
-              ))}
-            </SimpleGrid>
+            {contests.today.length > 0 ? (
+              <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={5}>
+                {contests.today.map((contest) => (
+                  <ContestCard
+                    key={contest.id}
+                    platformName={platformNames[contest.resource] || "UNKNOWN"}
+                    contestName={contest.event}
+                    registerLink={contest.href}
+                    startTime={contest.start}
+                    endTime={contest.end}
+                  />
+                ))}
+              </SimpleGrid>
+            ) : (
+              <Text>No contests today</Text>
+            )}
           </TabPanel>
           <TabPanel>
-            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={5}>
-              {contests.tomorrow.map((contest) => (
-                <ContestCard
-                  key={contest.id}
-                  platformName={platformNames[contest.resource] || "UNKNOWN"}
-                  contestName={contest.event}
-                  registerLink={contest.href}
-                  startTime={new Date(contest.start)}
-                  endTime={new Date(contest.end)}
-                />
-              ))}
-            </SimpleGrid>
+            {contests.tomorrow.length > 0 ? (
+              <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={5}>
+                {contests.tomorrow.map((contest) => (
+                  <ContestCard
+                    key={contest.id}
+                    platformName={platformNames[contest.resource] || "UNKNOWN"}
+                    contestName={contest.event}
+                    registerLink={contest.href}
+                    startTime={new Date(contest.start)}
+                    endTime={new Date(contest.end)}
+                  />
+                ))}
+              </SimpleGrid>
+            ) : (
+              <Text>No contests tomorrow</Text>
+            )}
           </TabPanel>
           <TabPanel>
-            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={5}>
-              {contests.later.map((contest) => (
-                <ContestCard
-                  key={contest.id}
-                  platformName={platformNames[contest.resource] || "UNKNOWN"}
-                  contestName={contest.event}
-                  registerLink={contest.href}
-                  startTime={new Date(contest.start)}
-                  endTime={new Date(contest.end)}
-                />
-              ))}
-            </SimpleGrid>
+            {contests.later.length > 0 ? (
+              <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={5}>
+                {contests.later.map((contest) => (
+                  <ContestCard
+                    key={contest.id}
+                    platformName={platformNames[contest.resource] || "UNKNOWN"}
+                    contestName={contest.event}
+                    registerLink={contest.href}
+                    startTime={new Date(contest.start)}
+                    endTime={new Date(contest.end)}
+                  />
+                ))}
+              </SimpleGrid>
+            ) : (
+              <Text>No contests later</Text>
+            )}
           </TabPanel>
         </TabPanels>
       </Tabs>

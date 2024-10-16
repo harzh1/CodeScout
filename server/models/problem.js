@@ -24,6 +24,10 @@ const problemSchema = new Schema(
       type: Number,
       required: true,
     },
+    solveCount: {
+      type: Number,
+      required: true,
+    },
   },
   { timestamps: true }
 );
