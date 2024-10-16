@@ -34,6 +34,10 @@ const NavLinks = ({ handleButtonClick }) => {
     } else if (path === "/signup") {
       setActiveButton("Signup");
     }
+    else if (path === "/ProfilePage") {
+      setActiveButton("ProfilePage");
+    }
+
   }, [location]); // This effect runs every time the location changes
 
   return (
@@ -97,7 +101,10 @@ const NavLinks = ({ handleButtonClick }) => {
               </MenuButton>
               <MenuList>
                 <MenuGroup title="Profile">
-                  <MenuItem>My Account</MenuItem>
+                  <NavLink to={`/ProfilePage`} onClick={() => handleButtonClick("ProfilePage")}>
+                  <MenuItem >My Account</MenuItem>
+                  </NavLink>
+                  
                   <MenuItem>Settings</MenuItem>
                   <MenuItem color="red.500"> 
                     Log Out

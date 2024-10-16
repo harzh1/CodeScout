@@ -10,6 +10,7 @@ import LoginPage from "./components/Loginpage";
 import SignupPage from "./components/SignupPage"; // Import Signup component
 import { useLocation } from "react-router-dom";
 
+import ProfilePage from "./components/ProfilePage";
 function App() {
   const [activeButton, setActiveButton] = useState("Home");
   const location = useLocation(); // Get the current location
@@ -51,6 +52,7 @@ function App() {
             <Route path="/" element={<Container />} />
             <Route path="/Practice" element={<Practice />} />
             <Route path="/Ratedquestions" element={<RatedQuestions />} />
+            <Route path="/ProfilePage" element={<ProfilePage />} />
             <Route path="/signup" element={<SignupPage />} /> {/* Route for signup */}
           </Routes>
         </>
