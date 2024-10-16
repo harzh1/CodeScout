@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -23,6 +24,10 @@ import {
 
 const ProfilePage = ({ firstName, fetchUsernames, saveUsernames }) => {
   const [usernames, setUsernames] = useState({
+    codeforces: "",
+    leetcode: "",
+    codechef: "",
+    atcoder: "",
     codeforces: "",
     leetcode: "",
     codechef: "",

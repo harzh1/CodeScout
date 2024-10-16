@@ -51,6 +51,7 @@ function App() {
           <NavLinks handleButtonClick={() => handleButtonClick} />
           <Divider />
           <Routes>
+            <Route path="/pp" element={<ProfilePage />} />
             <Route path="/" element={<Container />} />
             <Route path="/Practice" element={<Practice />} />
             <Route path="/Ratedquestions" element={<RatedQuestions />} />
