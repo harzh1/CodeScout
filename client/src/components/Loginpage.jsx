@@ -1,63 +1,79 @@
-import React, { useState } from 'react';
-import { Box, Button, FormControl, FormLabel, Heading, Input, Stack, IconButton } from '@chakra-ui/react';
-import { FaGithub, FaGoogle } from 'react-icons/fa';
+import { useState } from "react";
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Stack,
+  IconButton,
+} from "@chakra-ui/react";
+import { FaGithub, FaGoogle } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
 
-const users = [
-  {
-    name: "John@gmail.com",
-    password: "J0hn$2024!"
-  },
-  {
-    name: "Alice@gmail.com",
-    password: "Alic3#2024!"
-  },
-  {
-    name: "Michael@gmail.com",
-    password: "M1ch@el2024!"
-  },
-  {
-    name: "Sarah@gmail.com",
-    password: "S4rah%2024!"
-  },
-  {
-    name: "dhruv@gmail.com",
-    password: "test123"
-  }
-];
-
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate(); // Hook to navigate programmatically
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if email and password match
-    const user = users.find(user => user.name === email && user.password === password);
-    if (user) {
-      // Redirect to home page if credentials are correct
-      navigate('/');
-    } else {
-      // Handle incorrect login (optional)
-      alert('Invalid email or password');
+    setLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:3000/api/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(responseData.message);
+      }
+      const { userId, token } = responseData;
+
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("token", token);
+
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleGithubLogin = () => {
     // GitHub login logic here
-    window.location.href = 'https://github.com/login/oauth/authorize'; // Example URL for GitHub OAuth
+    window.location.href = "https://github.com/login/oauth/authorize"; // Example URL for GitHub OAuth
   };
 
   const handleGoogleLogin = () => {
     // Google login logic here
-    window.location.href = 'https://accounts.google.com/signin/oauth'; // Example URL for Google OAuth
+    window.location.href = "https://accounts.google.com/signin/oauth"; // Example URL for Google OAuth
   };
 
   return (
-    <div style={{ minHeight: '100vh' }}>
-      <Box mt={8} display="flex" alignItems="center" justifyContent="center" w="100%" style={{ backgroundColor: 'white' }}>
+    <div style={{ minHeight: "100vh" }}>
+      <Box
+        mt={8}
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        w="100%"
+        style={{ backgroundColor: "white" }}
+      >
         <Box
           maxW="400px"
           width="100%"
@@ -92,15 +108,32 @@ const LoginPage = () => {
                   width="100%"
                 />
               </FormControl>
-              <Button type="submit" colorScheme="blue" width="full" mt={4}>
-                Login
+              <Button
+                type="submit"
+                colorScheme="blue"
+                width="full"
+                mt={4}
+                disabled={loading}
+              >
+                {loading ? "Loading..." : "Login"}
               </Button>
               <NavLink to="/signup">
-                <Button type="button" colorScheme="blue" width="full" mt={5} variant="outline">
+                <Button
+                  type="button"
+                  colorScheme="blue"
+                  width="full"
+                  mt={5}
+                  variant="outline"
+                >
                   Switch to Sign up
                 </Button>
               </NavLink>
-              <Box display="flex" alignItems="center" justifyContent="center" mt={4}>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                mt={4}
+              >
                 <IconButton
                   icon={<FaGithub />}
                   aria-label="Sign in with GitHub"
