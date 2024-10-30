@@ -92,13 +92,35 @@ function UpcomingContests() {
         tomorrow.sort(sortByStartTime);
         later.sort(sortByStartTime);
 
-        setContests({ today, tomorrow, later });
+        const contestsData = { today, tomorrow, later };
+        setContests(contestsData);
+
+        // Save to local storage with expiration time
+        const expirationTime = new Date();
+        expirationTime.setHours(24, 0, 0, 0); // Set to 12:00 AM next day
+        localStorage.setItem("contestsData", JSON.stringify(contestsData));
+        localStorage.setItem("contestsExpiration", expirationTime.getTime());
       } catch (error) {
         console.error("Error fetching contests:", error);
       }
     };
 
-    fetchContests();
+    const loadContests = () => {
+      const storedData = localStorage.getItem("contestsData");
+      const expirationTime = localStorage.getItem("contestsExpiration");
+
+      if (
+        storedData &&
+        expirationTime &&
+        new Date().getTime() < expirationTime
+      ) {
+        setContests(JSON.parse(storedData));
+      } else {
+        fetchContests();
+      }
+    };
+
+    loadContests();
   }, []);
 
   return (

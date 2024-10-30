@@ -4,15 +4,11 @@ const Schema = mongoose.Schema;
 
 const codingPlatformSchema = new Schema(
   {
-    platformName: {
-      type: String,
-      required: true,
-    },
     username: {
       type: String,
       required: true,
     },
-    platformURL: {
+    platformUrl: {
       type: String,
       required: true,
     },

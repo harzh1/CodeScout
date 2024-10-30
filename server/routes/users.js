@@ -2,6 +2,7 @@ import express from "express";
 const router = express.Router();
 import { check } from "express-validator";
 import * as users_controller from "../controllers/usersController.js";
+import checkAuth from "../middleware/checkAuth.js";
 
 /* GET users listing. */
 router.get("/", function (req, res, next) {
@@ -19,5 +20,11 @@ router.post(
 );
 
 router.post("/login", users_controller.login);
+
+router.get("/:id", checkAuth, users_controller.getUser);
+
+router.patch("/:id", checkAuth, users_controller.updateUsername);
+
+router.get("/:id/platforms", checkAuth, users_controller.getUserPlatforms);
 
 export default router;

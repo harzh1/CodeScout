@@ -21,6 +21,8 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
+const userId = localStorage.getItem("userId");
+
 const ProfilePage = ({ firstName, fetchUsernames, saveUsernames }) => {
   const [usernames, setUsernames] = useState({
     codeforces: "",
