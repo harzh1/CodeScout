@@ -20,6 +20,7 @@ import {
   Flex,
   VStack,
 } from "@chakra-ui/react";
+import axios from "axios";
 
 const userId = localStorage.getItem("userId");
 
@@ -59,10 +60,30 @@ const ProfilePage = ({ firstName, fetchUsernames, saveUsernames }) => {
     setIsChanged(changesMade);
   };
 
-  const handleSaveChanges = () => {
-    saveUsernames(usernames);
-    setInitialUsernames(usernames);
-    setIsChanged(false);
+  const handleSaveChanges = async () => {
+    const token = localStorage.getItem("authToken"); // Get the token from localStorage
+
+    try {
+      // Sending PUT request to update the username
+      await axios.patch(
+        `http://localhost:3000/api/users/${userId}`,
+        {
+          platformUrl: "platform", // Replace with actual platform URL (e.g., codeforces)
+          newUsername: usernames.codeforces, // Replace with appropriate username (from the state)
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Send token in the header
+          },
+        }
+      );
+      // Assuming saveUsernames is responsible for saving the data locally
+      saveUsernames(usernames);
+      setInitialUsernames(usernames);
+      setIsChanged(false);
+    } catch (error) {
+      console.error("Error updating username:", error);
+    }
   };
 
   const handleTabChange = (index) => {
