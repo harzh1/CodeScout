@@ -185,6 +185,7 @@ export const getUserPlatforms = asyncHandler(async (req, res, next) => {
       err.status = 404;
       return next(err);
     }
+    
     res.json(user.codingPlatforms);
   } catch (error) {
     const err = new Error("Could not fetch platforms");
@@ -192,3 +193,5 @@ export const getUserPlatforms = asyncHandler(async (req, res, next) => {
     return next(err);
   }
 });
+
+
