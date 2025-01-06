@@ -100,8 +100,8 @@ function ContestCard({
 ContestCard.propTypes = {
   platformName: PropTypes.string.isRequired,
   contestName: PropTypes.string.isRequired,
-  startTime: PropTypes.string.isRequired,
-  endTime: PropTypes.string.isRequired,
+  startTime: PropTypes.instanceOf(Date).isRequired,
+  endTime: PropTypes.instanceOf(Date).isRequired,
   registerLink: PropTypes.string.isRequired,
 };
 

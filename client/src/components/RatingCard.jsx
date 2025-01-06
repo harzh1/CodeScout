@@ -93,20 +93,20 @@ function RatingCard({
   );
 }
 
-RatingCard.propTypes = {
-  platformName: PropTypes.string.isRequired,
-  platformIcon: PropTypes.string,
-  username: PropTypes.string.isRequired,
-  rating: PropTypes.number.isRequired,
-  ratingChange: PropTypes.number.isRequired,
-  lastRank: PropTypes.number.isRequired,
-  userRank: PropTypes.string,
-  userStar: PropTypes.number,
-  outerColor: PropTypes.string.isRequired, // Single color input for outer gradient
-};
+// RatingCard.propTypes = {
+//   platformName: PropTypes.string.isRequired,
+//   platformIcon: PropTypes.string,
+//   username: PropTypes.string.isRequired,
+//   rating: PropTypes.number.isRequired,
+//   ratingChange: PropTypes.number.isRequired,
+//   lastRank: PropTypes.number,
+//   userRank: PropTypes.string,
+//   userStar: PropTypes.number,
+//   outerColor: PropTypes.string.isRequired, // Single color input for outer gradient
+// };
 
-RatingCard.defaultProps = {
-  platformIcon: "", // Default to an empty string if no icon is provided
-};
+// RatingCard.defaultProps = {
+//   platformIcon: "", // Default to an empty string if no icon is provided
+// };
 
 export default RatingCard;

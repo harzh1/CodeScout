@@ -48,7 +48,7 @@ function App() {
         <SignupPage />
       ) : (
         <>
-          <NavLinks handleButtonClick={() => handleButtonClick} />
+          <NavLinks handleButtonClick={handleButtonClick} />
           <Divider />
           <Routes>
             <Route path="/pp" element={<ProfilePage />} />
@@ -56,7 +56,8 @@ function App() {
             <Route path="/Practice" element={<Practice />} />
             <Route path="/Ratedquestions" element={<RatedQuestions />} />
             <Route path="/ProfilePage" element={<ProfilePage />} />
-            <Route path="/signup" element={<SignupPage />} />{" "}
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/login" element={<LoginPage />} />
             {/* Route for signup */}
           </Routes>
         </>
