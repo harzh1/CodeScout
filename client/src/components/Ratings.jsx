@@ -19,11 +19,13 @@ function Ratings() {
   const [codechefData, setCodechefData] = useState(null);
   const [leetcodeData, setLeetcodeData] = useState(null);
 
+  const domain = import.meta.env.VITE_APP_DOMAIN;
+
   useEffect(() => {
     const fetchPlatforms = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3000/api/users/${userId}/platforms`,
+          `${domain}/api/users/${userId}/platforms`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -32,16 +34,25 @@ function Ratings() {
         );
         const data = await response.json();
 
-        const codeforcesPlatform = data.find((platform) => platform.platformUrl === "codeforces.com");
-        if (codeforcesPlatform) setCodeforcesUsername(codeforcesPlatform.username);
+        const codeforcesPlatform = data.find(
+          (platform) => platform.platformUrl === "codeforces.com"
+        );
+        if (codeforcesPlatform)
+          setCodeforcesUsername(codeforcesPlatform.username);
 
-        const codechefPlatform = data.find((platform) => platform.platformUrl === "codechef.com");
+        const codechefPlatform = data.find(
+          (platform) => platform.platformUrl === "codechef.com"
+        );
         if (codechefPlatform) setCodechefUsername(codechefPlatform.username);
 
-        const atcoderPlatform = data.find((platform) => platform.platformUrl === "atcoder.jp");
+        const atcoderPlatform = data.find(
+          (platform) => platform.platformUrl === "atcoder.jp"
+        );
         if (atcoderPlatform) setAtcoderUsername(atcoderPlatform.username);
 
-        const leetcodePlatform = data.find((platform) => platform.platformUrl === "leetcode.com");
+        const leetcodePlatform = data.find(
+          (platform) => platform.platformUrl === "leetcode.com"
+        );
         if (leetcodePlatform) setLeetcodeUsername(leetcodePlatform.username);
       } catch (error) {
         console.log("Error fetching platforms:", error);
@@ -56,7 +67,9 @@ function Ratings() {
     const fetchCodeforcesData = async () => {
       if (codeforcesUsername) {
         try {
-          const response = await fetch(`https://codeforces.com/api/user.rating?handle=${codeforcesUsername}`);
+          const response = await fetch(
+            `https://codeforces.com/api/user.rating?handle=${codeforcesUsername}`
+          );
           const data = await response.json();
 
           const contests = data.result;
@@ -85,7 +98,9 @@ function Ratings() {
     const fetchCodechefData = async () => {
       if (codechefUsername) {
         try {
-          const response = await fetch(`https://codechef-api.vercel.app/handle/${codechefUsername}`);
+          const response = await fetch(
+            `https://codechef-api.vercel.app/handle/${codechefUsername}`
+          );
           const data = await response.json();
 
           const { ratingData } = data;
@@ -115,7 +130,9 @@ function Ratings() {
     const fetchLeetcodeData = async () => {
       if (leetcodeUsername) {
         try {
-          const response = await fetch(`https://alfa-leetcode-api.onrender.com/${leetcodeUsername}/contest`);
+          const response = await fetch(
+            `https://alfa-leetcode-api.onrender.com/${leetcodeUsername}/contest`
+          );
           const data = await response.json();
 
           const { contestParticipation } = data;
@@ -161,16 +178,16 @@ function Ratings() {
 
   const getCodeforcesColor = (rank) => {
     const colors = {
-      "NEWBIE": "#A3A3A3",
-      "PUPIL": "#91fa91", // Updated color for PUPIL
-      "SPECIALIST": "#6bdb6b",
-      "EXPERT": "#5bbd6b",
+      NEWBIE: "#A3A3A3",
+      PUPIL: "#91fa91", // Updated color for PUPIL
+      SPECIALIST: "#6bdb6b",
+      EXPERT: "#5bbd6b",
       "CANDIDATE MASTER": "#4e997a",
-      "MASTER": "#3d786b",
+      MASTER: "#3d786b",
       "INTERNATIONAL MASTER": "#2c6055",
-      "GRANDMASTER": "#1b4c41",
+      GRANDMASTER: "#1b4c41",
       "INTERNATIONAL GRANDMASTER": "#0a3728",
-      "TOURIST": "#FFD700"
+      TOURIST: "#FFD700",
     };
     return colors[rank] || "#FFFFFF";
   };

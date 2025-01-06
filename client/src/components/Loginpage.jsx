@@ -1,318 +1,160 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useState } from "react";
 import {
   Box,
   Button,
+  FormControl,
+  FormLabel,
   Heading,
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
   Input,
-  Checkbox,
-  useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Flex,
-  VStack,
+  Stack,
+  IconButton,
 } from "@chakra-ui/react";
+import { FaGithub, FaGoogle } from "react-icons/fa";
+import { NavLink, useNavigate } from "react-router-dom";
 
-const userId = localStorage.getItem("userId");
+const LoginPage = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate(); // Hook to navigate programmatically
+  const [loading, setLoading] = useState(false);
 
-const ProfilePage = ({ firstName, fetchUsernames, saveUsernames }) => {
-  const [usernames, setUsernames] = useState({
-    codeforces: "",
-    leetcode: "",
-    codechef: "",
-    atcoder: "",
-  });
-  const [initialUsernames, setInitialUsernames] = useState(usernames);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [isChanged, setIsChanged] = useState(false);
-  const [tabIndex, setTabIndex] = useState(0);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const [filterSettings, setFilterSettings] = useState({
-    codeforces: false,
-    leetcode: false,
-    atcoder: false,
-    codechef: false,
-  });
+    setLoading(true);
 
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      const data = await fetchUsernames();
-      setUsernames(data);
-      setInitialUsernames(data);
-    };
-    fetchInitialData();
-  }, [fetchUsernames]);
-
-  const handleInputChange = (platform, value) => {
-    setUsernames((prev) => ({ ...prev, [platform]: value }));
-    const changesMade = Object.keys(initialUsernames).some(
-      (platform) => initialUsernames[platform] !== value
-    );
-    setIsChanged(changesMade);
-  };
-
-  const handleSaveChanges = async () => {
     try {
-      // Make API request to update the username
-      const platformsToUpdate = Object.keys(usernames).filter(
-        (platform) => usernames[platform] !== initialUsernames[platform]
-      );
+      const response = await fetch("http://localhost:3000/api/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
 
-      // Iterate through all the platforms with changes
-      for (let platform of platformsToUpdate) {
-        const platformUrl = platform;
-        const newUsername = usernames[platform];
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
 
-        // Sending update request to the backend
-        await axios.put(`https//localhost:3000/api/users/${userId}`, {
-          platformUrl,
-          newUsername,
-        });
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(responseData.message);
       }
+      const { userId, token } = responseData;
 
-      // After successful update, save the new usernames and reset state
-      setInitialUsernames(usernames);
-      setIsChanged(false);
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("token", token);
+
+      navigate("/");
     } catch (error) {
-      console.error("Error updating username:", error);
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleTabChange = (index) => {
-    setTabIndex(index);
-    setUsernames({
-      codeforces: "",
-      leetcode: "",
-      codechef: "",
-      atcoder: "",
-    });
-    setIsChanged(false);
+  const handleGithubLogin = () => {
+    // GitHub login logic here
+    window.location.href = "https://github.com/login/oauth/authorize"; // Example URL for GitHub OAuth
   };
 
-  const handleFilterChange = (platform) => {
-    setFilterSettings((prev) => ({
-      ...prev,
-      [platform]: !prev[platform],
-    }));
+  const handleGoogleLogin = () => {
+    // Google login logic here
+    window.location.href = "https://accounts.google.com/signin/oauth"; // Example URL for Google OAuth
   };
 
   return (
     <div style={{ minHeight: "100vh" }}>
-      <Box p={6} maxW="6xl" mx="auto">
-        <Heading as="h1" size="lg" mb={6} textAlign="left">
-          Hi, {firstName}!
-        </Heading>
-
-        <Flex>
-          <Box w="20%">
-            <Tabs
-              orientation="vertical"
-              variant="soft-rounded"
-              colorScheme="blue"
-              onChange={handleTabChange}
-              index={tabIndex}
-            >
-              <TabList>
-                <Tab>Change Username</Tab>
-                <Tab>Filter Websites</Tab>
-                <Tab>Delete Account</Tab>
-                <Tab>Contact Us</Tab>
-              </TabList>
-            </Tabs>
-          </Box>
-
-          <Box flex="1" ml={6}>
-            <Tabs isFitted index={tabIndex}>
-              <TabPanels>
-                {/* Change Username Tab */}
-                <TabPanel>
-                  <Heading size="md" mb={4}>
-                    Change Username
-                  </Heading>
-                  <Box border="1px solid #e2e8f0" borderRadius="md" p={4}>
-                    <Tabs variant="enclosed">
-                      <TabList>
-                        <Tab>Codeforces</Tab>
-                        <Tab>Leetcode</Tab>
-                        <Tab>Codechef</Tab>
-                        <Tab>Atcoder</Tab>
-                      </TabList>
-
-                      <TabPanels>
-                        <TabPanel>
-                          <Input
-                            placeholder="Codeforces Username"
-                            value={usernames.codeforces}
-                            onChange={(e) =>
-                              handleInputChange("codeforces", e.target.value)
-                            }
-                          />
-                        </TabPanel>
-                        <TabPanel>
-                          <Input
-                            placeholder="Leetcode Username"
-                            value={usernames.leetcode}
-                            onChange={(e) =>
-                              handleInputChange("leetcode", e.target.value)
-                            }
-                          />
-                        </TabPanel>
-                        <TabPanel>
-                          <Input
-                            placeholder="Codechef Username"
-                            value={usernames.codechef}
-                            onChange={(e) =>
-                              handleInputChange("codechef", e.target.value)
-                            }
-                          />
-                        </TabPanel>
-                        <TabPanel>
-                          <Input
-                            placeholder="Atcoder Username"
-                            value={usernames.atcoder}
-                            onChange={(e) =>
-                              handleInputChange("atcoder", e.target.value)
-                            }
-                          />
-                        </TabPanel>
-                      </TabPanels>
-                    </Tabs>
-
-                    <Button
-                      mt={4}
-                      colorScheme={isChanged ? "green" : "gray"}
-                      onClick={handleSaveChanges}
-                      isDisabled={!isChanged}
-                    >
-                      Save Changes
-                    </Button>
-                  </Box>
-                </TabPanel>
-
-                {/* Filter Websites Tab */}
-                <TabPanel>
-                  <Box border="1px solid #e2e8f0" borderRadius="md" p={4}>
-                    <Heading size="md" mb={4}>
-                      Filter Websites
-                    </Heading>
-                    <VStack align="stretch" spacing={3}>
-                      <Flex
-                        justify="space-between"
-                        align="center"
-                        border="1px solid #e2e8f0"
-                        p={2}
-                        borderRadius="md"
-                      >
-                        <span>Codeforces</span>
-                        <Checkbox
-                          isChecked={filterSettings.codeforces}
-                          onChange={() => handleFilterChange("codeforces")}
-                        />
-                      </Flex>
-                      <Flex
-                        justify="space-between"
-                        align="center"
-                        border="1px solid #e2e8f0"
-                        p={2}
-                        borderRadius="md"
-                      >
-                        <span>Leetcode</span>
-                        <Checkbox
-                          isChecked={filterSettings.leetcode}
-                          onChange={() => handleFilterChange("leetcode")}
-                        />
-                      </Flex>
-                      <Flex
-                        justify="space-between"
-                        align="center"
-                        border="1px solid #e2e8f0"
-                        p={2}
-                        borderRadius="md"
-                      >
-                        <span>Codechef</span>
-                        <Checkbox
-                          isChecked={filterSettings.codechef}
-                          onChange={() => handleFilterChange("codechef")}
-                        />
-                      </Flex>
-                      <Flex
-                        justify="space-between"
-                        align="center"
-                        border="1px solid #e2e8f0"
-                        p={2}
-                        borderRadius="md"
-                      >
-                        <span>Atcoder</span>
-                        <Checkbox
-                          isChecked={filterSettings.atcoder}
-                          onChange={() => handleFilterChange("atcoder")}
-                        />
-                      </Flex>
-                    </VStack>
-                  </Box>
-                </TabPanel>
-
-                {/* Delete Account Tab */}
-                <TabPanel>
-                  <Box border="1px solid #e2e8f0" borderRadius="md" p={4}>
-                    <Heading size="md" mb={4}>
-                      Delete Account
-                    </Heading>
-                    <Button colorScheme="red" onClick={onOpen}>
-                      Delete Account
-                    </Button>
-                    <Modal isOpen={isOpen} onClose={onClose}>
-                      <ModalOverlay />
-                      <ModalContent>
-                        <ModalHeader>Delete Account</ModalHeader>
-                        <ModalBody>
-                          All data will be wiped out. Are you sure?
-                        </ModalBody>
-                        <ModalFooter>
-                          <Button
-                            colorScheme="red"
-                            mr={3}
-                            onClick={() => console.log("Account deleted")}
-                          >
-                            Confirm
-                          </Button>
-                          <Button variant="ghost" onClick={onClose}>
-                            Cancel
-                          </Button>
-                        </ModalFooter>
-                      </ModalContent>
-                    </Modal>
-                  </Box>
-                </TabPanel>
-
-                {/* Contact Us Tab */}
-                <TabPanel>
-                  <Box border="1px solid #e2e8f0" borderRadius="md" p={4}>
-                    <Heading size="md" mb={4}>
-                      Contact Us
-                    </Heading>
-                    <p>
-                      If you have any questions, reach out to
-                      support@website.com.
-                    </p>
-                  </Box>
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
-          </Box>
-        </Flex>
+      <Box
+        mt={8}
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        w="100%"
+        style={{ backgroundColor: "white" }}
+      >
+        <Box
+          maxW="400px"
+          width="100%"
+          p={6}
+          borderWidth={1}
+          borderRadius="md"
+          bg="white"
+          boxShadow="lg"
+        >
+          <Heading as="h2" size="lg" mb={6} textAlign="center">
+            Login
+          </Heading>
+          <form onSubmit={handleSubmit}>
+            <Stack spacing={4}>
+              <FormControl id="email" isRequired>
+                <FormLabel>Email address</FormLabel>
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  bg="gray.100"
+                  width="100%"
+                />
+              </FormControl>
+              <FormControl id="password" isRequired>
+                <FormLabel>Password</FormLabel>
+                <Input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  bg="gray.100"
+                  width="100%"
+                />
+              </FormControl>
+              <Button
+                type="submit"
+                colorScheme="blue"
+                width="full"
+                mt={4}
+                disabled={loading}
+              >
+                {loading ? "Loading..." : "Login"}
+              </Button>
+              <NavLink to="/signup">
+                <Button
+                  type="button"
+                  colorScheme="blue"
+                  width="full"
+                  mt={5}
+                  variant="outline"
+                >
+                  Switch to Sign up
+                </Button>
+              </NavLink>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                mt={4}
+              >
+                <IconButton
+                  icon={<FaGithub />}
+                  aria-label="Sign in with GitHub"
+                  colorScheme="gray"
+                  mx={2}
+                  onClick={handleGithubLogin}
+                />
+                <IconButton
+                  icon={<FaGoogle />}
+                  aria-label="Sign in with Google"
+                  colorScheme="red"
+                  mx={2}
+                  onClick={handleGoogleLogin}
+                />
+              </Box>
+            </Stack>
+          </form>
+        </Box>
       </Box>
     </div>
   );
 };
 
-export default ProfilePage;
+export default LoginPage;
