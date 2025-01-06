@@ -17,6 +17,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate(); // Hook to navigate programmatically
   const [loading, setLoading] = useState(false);
+  const domain = import.meta.env.VITE_APP_DOMAIN;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,7 +25,7 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3000/api/users/login", {
+      const response = await fetch(`${domain}/api/users/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

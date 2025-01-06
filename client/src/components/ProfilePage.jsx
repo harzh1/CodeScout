@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -42,6 +42,7 @@ const ProfilePage = ({ firstName, fetchUsernames, saveUsernames }) => {
     atcoder: false,
     codechef: false,
   });
+  const domain = import.meta.env.VITE_APP_DOMAIN;
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -66,7 +67,7 @@ const ProfilePage = ({ firstName, fetchUsernames, saveUsernames }) => {
     try {
       // Sending PUT request to update the username
       await axios.patch(
-        `http://localhost:3000/api/users/${userId}`,
+        `${domain}/api/users/${userId}`,
         {
           platformUrl: "platform", // Replace with actual platform URL (e.g., codeforces)
           newUsername: usernames.codeforces, // Replace with appropriate username (from the state)
