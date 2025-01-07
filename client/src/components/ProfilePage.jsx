@@ -9,7 +9,6 @@ import {
   Tab,
   TabPanel,
   Input,
-  Checkbox,
   useDisclosure,
   Modal,
   ModalOverlay,
@@ -18,40 +17,23 @@ import {
   ModalBody,
   ModalFooter,
   Flex,
-  VStack,
 } from "@chakra-ui/react";
-import axios from "axios";
 
 const userId = localStorage.getItem("userId");
 
-const ProfilePage = ({ firstName, fetchUsernames, saveUsernames }) => {
+function ProfilePage() {
   const [usernames, setUsernames] = useState({
-    codeforces: "",
-    leetcode: "",
-    codechef: "",
-    atcoder: "",
+    codeforces: localStorage.getItem("codeforcesUsername") || "",
+    leetcode: localStorage.getItem("leetcodeUsername") || "",
+    codechef: localStorage.getItem("codechefUsername") || "",
+    atcoder: localStorage.getItem("atcoderUsername") || "",
   });
   const [initialUsernames, setInitialUsernames] = useState(usernames);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isChanged, setIsChanged] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
 
-  const [filterSettings, setFilterSettings] = useState({
-    codeforces: false,
-    leetcode: false,
-    atcoder: false,
-    codechef: false,
-  });
   const domain = import.meta.env.VITE_APP_DOMAIN;
-
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      const data = await fetchUsernames();
-      setUsernames(data);
-      setInitialUsernames(data);
-    };
-    fetchInitialData();
-  }, [fetchUsernames]);
 
   const handleInputChange = (platform, value) => {
     setUsernames((prev) => ({ ...prev, [platform]: value }));
@@ -62,24 +44,30 @@ const ProfilePage = ({ firstName, fetchUsernames, saveUsernames }) => {
   };
 
   const handleSaveChanges = async () => {
-    const token = localStorage.getItem("authToken"); // Get the token from localStorage
+    const token = localStorage.getItem("token"); // Get the token from localStorage
 
     try {
-      // Sending PUT request to update the username
-      await axios.patch(
-        `${domain}/api/users/${userId}`,
-        {
-          platformUrl: "platform", // Replace with actual platform URL (e.g., codeforces)
-          newUsername: usernames.codeforces, // Replace with appropriate username (from the state)
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Send token in the header
-          },
+      for (const platform in usernames) {
+        if (usernames[platform] !== initialUsernames[platform]) {
+          await fetch(`${domain}/api/users/${userId}`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              platformUrl: `${platform}.com`,
+              newUsername: usernames[platform],
+            }),
+          });
         }
-      );
-      // Assuming saveUsernames is responsible for saving the data locally
-      saveUsernames(usernames);
+      }
+
+      // Update local storage
+      for (const platform in usernames) {
+        localStorage.setItem(`${platform}Username`, usernames[platform]);
+      }
+
       setInitialUsernames(usernames);
       setIsChanged(false);
     } catch (error) {
@@ -89,27 +77,14 @@ const ProfilePage = ({ firstName, fetchUsernames, saveUsernames }) => {
 
   const handleTabChange = (index) => {
     setTabIndex(index);
-    setUsernames({
-      codeforces: "",
-      leetcode: "",
-      codechef: "",
-      atcoder: "",
-    });
     setIsChanged(false);
-  };
-
-  const handleFilterChange = (platform) => {
-    setFilterSettings((prev) => ({
-      ...prev,
-      [platform]: !prev[platform],
-    }));
   };
 
   return (
     <div style={{ minHeight: "100vh" }}>
       <Box p={6} maxW="6xl" mx="auto">
         <Heading as="h1" size="lg" mb={6} textAlign="left">
-          Hi, {firstName}!
+          Hi, {localStorage.getItem("firstName")}!
         </Heading>
 
         <Flex>
@@ -123,7 +98,6 @@ const ProfilePage = ({ firstName, fetchUsernames, saveUsernames }) => {
             >
               <TabList>
                 <Tab>Change Username</Tab>
-                <Tab>Filter Websites</Tab>
                 <Tab>Delete Account</Tab>
                 <Tab>Contact Us</Tab>
               </TabList>
@@ -198,69 +172,6 @@ const ProfilePage = ({ firstName, fetchUsernames, saveUsernames }) => {
                   </Box>
                 </TabPanel>
 
-                {/* Filter Websites Tab */}
-                <TabPanel>
-                  <Box border="1px solid #e2e8f0" borderRadius="md" p={4}>
-                    <Heading size="md" mb={4}>
-                      Filter Websites
-                    </Heading>
-                    <VStack align="stretch" spacing={3}>
-                      <Flex
-                        justify="space-between"
-                        align="center"
-                        border="1px solid #e2e8f0"
-                        p={2}
-                        borderRadius="md"
-                      >
-                        <span>Codeforces</span>
-                        <Checkbox
-                          isChecked={filterSettings.codeforces}
-                          onChange={() => handleFilterChange("codeforces")}
-                        />
-                      </Flex>
-                      <Flex
-                        justify="space-between"
-                        align="center"
-                        border="1px solid #e2e8f0"
-                        p={2}
-                        borderRadius="md"
-                      >
-                        <span>Leetcode</span>
-                        <Checkbox
-                          isChecked={filterSettings.leetcode}
-                          onChange={() => handleFilterChange("leetcode")}
-                        />
-                      </Flex>
-                      <Flex
-                        justify="space-between"
-                        align="center"
-                        border="1px solid #e2e8f0"
-                        p={2}
-                        borderRadius="md"
-                      >
-                        <span>Codechef</span>
-                        <Checkbox
-                          isChecked={filterSettings.codechef}
-                          onChange={() => handleFilterChange("codechef")}
-                        />
-                      </Flex>
-                      <Flex
-                        justify="space-between"
-                        align="center"
-                        border="1px solid #e2e8f0"
-                        p={2}
-                        borderRadius="md"
-                      >
-                        <span>Atcoder</span>
-                        <Checkbox
-                          isChecked={filterSettings.atcoder}
-                          onChange={() => handleFilterChange("atcoder")}
-                        />
-                      </Flex>
-                    </VStack>
-                  </Box>
-                </TabPanel>
-
                 {/* Delete Account Tab */}
                 <TabPanel>
                   <Box border="1px solid #e2e8f0" borderRadius="md" p={4}>
@@ -313,6 +224,6 @@ const ProfilePage = ({ firstName, fetchUsernames, saveUsernames }) => {
       </Box>
     </div>
   );
-};
+}
 
 export default ProfilePage;
