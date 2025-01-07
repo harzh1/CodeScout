@@ -37,23 +37,37 @@ function Ratings() {
         const codeforcesPlatform = data.find(
           (platform) => platform.platformUrl === "codeforces.com"
         );
-        if (codeforcesPlatform)
+        if (codeforcesPlatform) {
           setCodeforcesUsername(codeforcesPlatform.username);
+          localStorage.setItem(
+            "codeforcesUsername",
+            codeforcesPlatform.username
+          );
+        }
 
         const codechefPlatform = data.find(
           (platform) => platform.platformUrl === "codechef.com"
         );
-        if (codechefPlatform) setCodechefUsername(codechefPlatform.username);
+        if (codechefPlatform) {
+          setCodechefUsername(codechefPlatform.username);
+          localStorage.setItem("codechefUsername", codechefPlatform.username);
+        }
 
         const atcoderPlatform = data.find(
           (platform) => platform.platformUrl === "atcoder.jp"
         );
-        if (atcoderPlatform) setAtcoderUsername(atcoderPlatform.username);
+        if (atcoderPlatform) {
+          setAtcoderUsername(atcoderPlatform.username);
+          localStorage.setItem("atcoderUsername", atcoderPlatform.username);
+        }
 
         const leetcodePlatform = data.find(
           (platform) => platform.platformUrl === "leetcode.com"
         );
-        if (leetcodePlatform) setLeetcodeUsername(leetcodePlatform.username);
+        if (leetcodePlatform) {
+          setLeetcodeUsername(leetcodePlatform.username);
+          localStorage.setItem("leetcodeUsername", leetcodePlatform.username);
+        }
       } catch (error) {
         console.log("Error fetching platforms:", error);
       }
