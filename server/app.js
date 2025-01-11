@@ -28,6 +28,10 @@ connectDB();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+app.use((req, res, next) => {
+  res.sendFile(path.resolve(__dirname, "build", "index.html"));
+});
+
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
   max: 20,
