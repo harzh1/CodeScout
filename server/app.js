@@ -28,10 +28,6 @@ connectDB();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use((req, res, next) => {
-  res.sendFile(path.resolve(__dirname, "build", "index.html"));
-});
-
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
   max: 20,
@@ -56,6 +52,10 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // app.use("/", indexRouter);
 app.use("/api/users", usersRouter);
+
+app.use((req, res, next) => {
+  res.sendFile(path.resolve(__dirname, "build", "index.html"));
+});
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
