@@ -45,9 +45,24 @@ const NavLinks = ({ handleButtonClick }) => {
     handleButtonClick(button); // Call the passed function
   };
 
+  const clearRatingData = () => {
+    // Clear platform usernames
+    localStorage.removeItem("codeforcesUsername");
+    localStorage.removeItem("codechefUsername");
+    localStorage.removeItem("atcoderUsername");
+    localStorage.removeItem("leetcodeUsername");
+
+    // Clear cached platform data
+    localStorage.removeItem("codeforcesData");
+    localStorage.removeItem("codechefData");
+    localStorage.removeItem("leetcodeData");
+  };
+
   const handleSignOut = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
+    clearRatingData();
+
     window.location.reload();
   };
 

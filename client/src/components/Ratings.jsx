@@ -1,264 +1,375 @@
-import { Box } from "@chakra-ui/react";
-import atcoderIcon from "../assets/atcoder.svg";
+import { Box, Button, Skeleton } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import codeforcesIcon from "../assets/codeforces.svg";
 import codechefIcon from "../assets/codechef.png";
+import atcoderIcon from "../assets/atcoder.svg";
 import leetcodeIcon from "../assets/leetcode.svg";
 import RatingCard from "./RatingCard";
-import { useEffect, useState } from "react";
+
+// Helper function to load cached data from localStorage
+const loadCachedData = (platform) => {
+  const cachedData = localStorage.getItem(`${platform}Data`);
+  if (cachedData) {
+    const { data, timestamp } = JSON.parse(cachedData);
+    const isExpired = Date.now() - timestamp > 24 * 60 * 60 * 1000; // 24 hours
+    if (!isExpired) return data;
+  }
+  return null;
+};
 
 function Ratings() {
   const userId = localStorage.getItem("userId");
   const token = localStorage.getItem("token");
 
-  const [codeforcesUsername, setCodeforcesUsername] = useState("");
-  const [codechefUsername, setCodechefUsername] = useState("");
-  const [atcoderUsername, setAtcoderUsername] = useState("");
-  const [leetcodeUsername, setLeetcodeUsername] = useState("");
+  // Platform usernames
+  const [codeforcesUsername, setCodeforcesUsername] = useState(
+    localStorage.getItem("codeforcesUsername") || ""
+  );
+  const [codechefUsername, setCodechefUsername] = useState(
+    localStorage.getItem("codechefUsername") || ""
+  );
+  const [atcoderUsername, setAtcoderUsername] = useState(
+    localStorage.getItem("atcoderUsername") || ""
+  );
+  const [leetcodeUsername, setLeetcodeUsername] = useState(
+    localStorage.getItem("leetcodeUsername") || ""
+  );
 
-  const [codeforcesData, setCodeforcesData] = useState(null);
-  const [codechefData, setCodechefData] = useState(null);
-  const [leetcodeData, setLeetcodeData] = useState(null);
+  // Platform data with initial state from cache
+  const [codeforcesData, setCodeforcesData] = useState(() =>
+    loadCachedData("codeforces")
+  );
+  const [codechefData, setCodechefData] = useState(() =>
+    loadCachedData("codechef")
+  );
+  const [leetcodeData, setLeetcodeData] = useState(() =>
+    loadCachedData("leetcode")
+  );
 
+  const [fetchData, setFetchData] = useState(false);
   const domain = import.meta.env.VITE_APP_DOMAIN;
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(null);
+
+  // Fetch platform usernames from backend
   useEffect(() => {
+    if (!fetchData) return;
+    setIsLoading(true);
+
     const fetchPlatforms = async () => {
       try {
         const response = await fetch(
           `${domain}/api/users/${userId}/platforms`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
-        const data = await response.json();
+        const platforms = await response.json();
 
-        const codeforcesPlatform = data.find(
-          (platform) => platform.platformUrl === "codeforces.com"
-        );
-        if (codeforcesPlatform) {
-          setCodeforcesUsername(codeforcesPlatform.username);
-          localStorage.setItem(
-            "codeforcesUsername",
-            codeforcesPlatform.username
-          );
-        }
-
-        const codechefPlatform = data.find(
-          (platform) => platform.platformUrl === "codechef.com"
-        );
-        if (codechefPlatform) {
-          setCodechefUsername(codechefPlatform.username);
-          localStorage.setItem("codechefUsername", codechefPlatform.username);
-        }
-
-        const atcoderPlatform = data.find(
-          (platform) => platform.platformUrl === "atcoder.jp"
-        );
-        if (atcoderPlatform) {
-          setAtcoderUsername(atcoderPlatform.username);
-          localStorage.setItem("atcoderUsername", atcoderPlatform.username);
-        }
-
-        const leetcodePlatform = data.find(
-          (platform) => platform.platformUrl === "leetcode.com"
-        );
-        if (leetcodePlatform) {
-          setLeetcodeUsername(leetcodePlatform.username);
-          localStorage.setItem("leetcodeUsername", leetcodePlatform.username);
-        }
+        platforms.forEach((p) => {
+          switch (p.platformUrl) {
+            case "codeforces.com":
+              setCodeforcesUsername(p.username);
+              localStorage.setItem("codeforcesUsername", p.username);
+              break;
+            case "codechef.com":
+              setCodechefUsername(p.username);
+              localStorage.setItem("codechefUsername", p.username);
+              break;
+            case "atcoder.jp":
+              setAtcoderUsername(p.username);
+              localStorage.setItem("atcoderUsername", p.username);
+              break;
+            case "leetcode.com":
+              setLeetcodeUsername(p.username);
+              localStorage.setItem("leetcodeUsername", p.username);
+              break;
+          }
+        });
       } catch (error) {
-        console.log("Error fetching platforms:", error);
+        console.error("Error fetching platforms:", error);
       }
     };
 
     fetchPlatforms();
-  }, [userId, token]);
+  }, [fetchData, domain, token, userId]);
 
-  // Fetch Codeforces data
+  // Fetch platform data when usernames update
   useEffect(() => {
-    const fetchCodeforcesData = async () => {
-      if (codeforcesUsername) {
-        try {
-          const response = await fetch(
-            `https://codeforces.com/api/user.rating?handle=${codeforcesUsername}`
-          );
-          const data = await response.json();
+    if (!fetchData) return;
 
-          const contests = data.result;
+    const getCodeforcesRank = (rating) => {
+      if (rating >= 3000) return "INTERNATIONAL GRANDMASTER";
+      if (rating >= 2400) return "GRANDMASTER";
+      if (rating >= 2100) return "MASTER";
+      if (rating >= 1900) return "CANDIDATE MASTER";
+      if (rating >= 1600) return "EXPERT";
+      if (rating >= 1400) return "SPECIALIST";
+      if (rating >= 1200) return "PUPIL";
+      return "NEWBIE";
+    };
+
+    // Fetch and cache Codeforces data
+    const fetchCodeforcesData = async () => {
+      if (!codeforcesUsername) return;
+      try {
+        const response = await fetch(
+          `https://codeforces.com/api/user.rating?handle=${codeforcesUsername}`
+        );
+        const json = await response.json();
+        const contests = json.result;
+
+        if (contests?.length > 0) {
           const n = contests.length;
           let ratingChange = 0;
-
           if (n >= 2) {
-            const latestRating = contests[n - 1].newRating;
-            const previousRating = contests[n - 2].newRating;
-            ratingChange = latestRating - previousRating;
-            if (ratingChange > 0) ratingChange = "+" + ratingChange;
+            ratingChange =
+              contests[n - 1].newRating - contests[n - 2].newRating;
           }
 
-          setCodeforcesData({
+          const newData = {
             rating: contests[n - 1].newRating,
-            ratingChange,
+            ratingChange: ratingChange > 0 ? `+${ratingChange}` : ratingChange,
             lastRank: contests[n - 1].rank,
             userRank: getCodeforcesRank(contests[n - 1].newRating),
-          });
-        } catch (error) {
-          console.log("Error fetching Codeforces data:", error);
+          };
+
+          setCodeforcesData(newData);
+          localStorage.setItem(
+            "codeforcesData",
+            JSON.stringify({
+              data: newData,
+              timestamp: Date.now(),
+            })
+          );
         }
+      } catch (error) {
+        console.error("Error fetching Codeforces data:", error);
       }
     };
 
+    // Fetch and cache CodeChef data
     const fetchCodechefData = async () => {
-      if (codechefUsername) {
-        try {
-          const response = await fetch(
-            `https://codechef-api.vercel.app/handle/${codechefUsername}`
-          );
-          const data = await response.json();
+      if (!codechefUsername) return;
+      try {
+        const response = await fetch(
+          `https://codechef-api.vercel.app/handle/${codechefUsername}`
+        );
+        const data = await response.json();
 
-          const { ratingData } = data;
+        if (data.ratingData?.length > 0) {
+          const n = data.ratingData.length;
           let ratingChange = 0;
-          let n = ratingData.length;
-          if (ratingData && ratingData.length >= 2) {
-            const latestRating = parseInt(ratingData[n - 1].rating);
-            const previousRating = parseInt(ratingData[n - 2].rating);
-            ratingChange = latestRating - previousRating;
-            if (ratingChange > 0) ratingChange = "+" + ratingChange;
+          if (n >= 2) {
+            ratingChange = data.currentRating - data.ratingData[n - 2].rating;
           }
 
-          setCodechefData({
+          const newData = {
             rating: data.currentRating,
             highestRating: data.highestRating,
-            lastRank: ratingData[n - 1].rank,
+            lastRank: data.ratingData[n - 1].rank,
             countryRank: data.countryRank,
             userStar: data.stars ? parseInt(data.stars[0]) : null,
             ratingChange,
-          });
-        } catch (error) {
-          console.log("Error fetching CodeChef data:", error);
+          };
+
+          setCodechefData(newData);
+          localStorage.setItem(
+            "codechefData",
+            JSON.stringify({
+              data: newData,
+              timestamp: Date.now(),
+            })
+          );
         }
+      } catch (error) {
+        console.error("Error fetching CodeChef data:", error);
       }
     };
+
+    // Fetch and cache LeetCode data
 
     const fetchLeetcodeData = async () => {
-      if (leetcodeUsername) {
-        try {
-          const response = await fetch(
-            `https://alfa-leetcode-api.onrender.com/${leetcodeUsername}/contest`
-          );
-          const data = await response.json();
+      if (!leetcodeUsername) return;
+      try {
+        const response = await fetch(
+          `https://alfa-leetcode-api.onrender.com/${leetcodeUsername}/contest`
+        );
+        const data = await response.json();
 
-          const { contestParticipation } = data;
-          let ratingChange = 0;
-          let n = contestParticipation.length;
+        const { contestParticipation } = data;
+        let ratingChange = 0;
+        let n = contestParticipation.length;
 
-          if (contestParticipation && n >= 2) {
-            const latestRating = parseInt(contestParticipation[n - 1].rating);
-            const previousRating = parseInt(contestParticipation[n - 2].rating);
-            ratingChange = latestRating - previousRating;
-            if (ratingChange > 0) ratingChange = "+" + ratingChange;
-          }
-
-          setLeetcodeData({
-            rating: parseInt(data.contestRating),
-            lastRank: contestParticipation[n - 1].ranking,
-            userRank: parseInt(data.contestRating),
-            ratingChange,
-          });
-        } catch (error) {
-          console.log("Error fetching LeetCode data:", error);
+        if (contestParticipation && n >= 2) {
+          const latestRating = parseInt(contestParticipation[n - 1].rating);
+          const previousRating = parseInt(contestParticipation[n - 2].rating);
+          ratingChange = latestRating - previousRating;
+          if (ratingChange > 0) ratingChange = "+" + ratingChange;
         }
+
+        const newData = {
+          rating: parseInt(data.contestRating),
+          lastRank: contestParticipation[n - 1].ranking,
+          userRank: parseInt(data.contestRating),
+          ratingChange,
+        };
+
+        setLeetcodeData(newData);
+
+        localStorage.setItem(
+          "leetcodeData",
+          JSON.stringify({
+            data: newData,
+            timestamp: Date.now(),
+          })
+        );
+      } catch (error) {
+        console.error("Error fetching LeetCode data:", error);
       }
     };
 
-    if (codeforcesUsername) fetchCodeforcesData();
-    if (codechefUsername) fetchCodechefData();
-    if (leetcodeUsername) fetchLeetcodeData();
-  }, [codeforcesUsername, codechefUsername, leetcodeUsername]);
+    const fetchAllData = async () => {
+      await fetchCodeforcesData();
+      await fetchCodechefData();
+      await fetchLeetcodeData();
+      setFetchData(false); // Reset fetch trigger
+      setIsLoading(false);
+      localStorage.setItem("lastFetchTime", Date.now());
+      setLastUpdated(Date.now());
+    };
 
-  // Function to determine Codeforces rank based on rating
-  const getCodeforcesRank = (rating) => {
-    if (rating >= 4000) return "TOURIST";
-    if (rating >= 3000) return "INTERNATIONAL GRANDMASTER";
-    if (rating >= 2400) return "GRANDMASTER";
-    if (rating >= 2100) return "MASTER";
-    if (rating >= 1900) return "CANDIDATE MASTER";
-    if (rating >= 1600) return "EXPERT";
-    if (rating >= 1400) return "SPECIALIST";
-    if (rating >= 1200) return "PUPIL";
-    return "NEWBIE";
-  };
+    fetchAllData();
+  }, [fetchData, codeforcesUsername, codechefUsername, leetcodeUsername]);
 
   const getCodeforcesColor = (rank) => {
     const colors = {
-      NEWBIE: "#A3A3A3",
-      PUPIL: "#91fa91", // Updated color for PUPIL
-      SPECIALIST: "#6bdb6b",
-      EXPERT: "#5bbd6b",
-      "CANDIDATE MASTER": "#4e997a",
-      MASTER: "#3d786b",
-      "INTERNATIONAL MASTER": "#2c6055",
-      GRANDMASTER: "#1b4c41",
-      "INTERNATIONAL GRANDMASTER": "#0a3728",
-      TOURIST: "#FFD700",
+      NEWBIE: "#E0E0E0",
+      PUPIL: "#A5D6A7",
+      SPECIALIST: "#A7D8D8",
+      EXPERT: "#B3B3FF",
+      "CANDIDATE MASTER": "#EAADEA",
+      MASTER: "#FFCC99",
+      "INTERNATIONAL MASTER": "#FFCC99",
+      GRANDMASTER: "#FF9999",
+      "INTERNATIONAL GRANDMASTER": "#FF9999",
     };
     return colors[rank] || "#FFFFFF";
   };
 
+  useEffect(() => {
+    const ratingContainer = document.querySelector(".ratingContainer");
+    if (ratingContainer) {
+      const handleWheel = (event) => {
+        if (event.deltaY !== 0) {
+          event.preventDefault();
+          ratingContainer.scrollLeft += event.deltaY;
+        }
+      };
+      ratingContainer.addEventListener("wheel", handleWheel);
+      return () => ratingContainer.removeEventListener("wheel", handleWheel);
+    }
+  }, []);
+
+  useEffect(() => {
+    const lastFetchTime = localStorage.getItem("lastFetchTime");
+    if (lastFetchTime) {
+      setLastUpdated(parseInt(lastFetchTime));
+    }
+  }, []);
+
+  const getLastUpdatedMessage = () => {
+    if (!lastUpdated) return "";
+    const hoursAgo = Math.floor((Date.now() - lastUpdated) / (1000 * 60 * 60));
+    return `Last updated ${hoursAgo} hours ago`;
+  };
+
   return (
-    <Box className="ratingContainer" mt={5}>
-      <div className="ratings">
-        {codeforcesData && (
-          <RatingCard
-            platformName="CODEFORCES"
-            platformIcon={codeforcesIcon}
-            username={codeforcesUsername}
-            rating={codeforcesData.rating}
-            ratingChange={codeforcesData.ratingChange}
-            lastRank={codeforcesData.lastRank}
-            userRank={codeforcesData.userRank}
-            outerColor={getCodeforcesColor(codeforcesData.userRank)}
-          />
+    <>
+      <Box className="ratingContainer" mt={5}>
+        {isLoading ? (
+          <div className="ratings">
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton
+                key={i}
+                height="250px" // Match RatingCard height
+                width="400px" // Match RatingCard width
+                borderRadius="lg"
+                startColor="gray.100"
+                endColor="gray.200"
+                m="auto" // Match RatingCard margin
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="ratings">
+            <RatingCard
+              platformName="CODEFORCES"
+              platformIcon={codeforcesIcon}
+              username={codeforcesUsername || "No Username"}
+              rating={codeforcesData?.rating ?? "NULL"}
+              ratingChange={codeforcesData?.ratingChange ?? "NULL"}
+              lastRank={codeforcesData?.lastRank ?? "NULL"}
+              userRank={codeforcesData?.userRank ?? "NULL"}
+              outerColor={getCodeforcesColor(codeforcesData?.userRank)}
+            />
+
+            <RatingCard
+              platformName="CODECHEF"
+              platformIcon={codechefIcon}
+              username={codechefUsername || "No Username"}
+              rating={codechefData?.rating ?? "NULL"}
+              ratingChange={codechefData?.ratingChange ?? "NULL"}
+              lastRank={codechefData?.lastRank ?? "NULL"}
+              userStar={codechefData?.userStar ?? "1"}
+              outerColor="red.200"
+            />
+
+            <RatingCard
+              platformName="ATCODER"
+              platformIcon={atcoderIcon}
+              username={atcoderUsername || "No Username"}
+              rating={1223}
+              ratingChange={-56}
+              lastRank={11208}
+              userRank="MASTER"
+              outerColor="#E2E8F0"
+            />
+
+            <RatingCard
+              platformName="LEETCODE"
+              platformIcon={leetcodeIcon}
+              username={leetcodeUsername || "No Username"}
+              rating={leetcodeData?.rating ?? "NULL"}
+              ratingChange={leetcodeData?.ratingChange ?? "NULL"}
+              lastRank={leetcodeData?.lastRank ?? "NULL"}
+              userRank={leetcodeData?.userRank ?? "NULL"}
+              outerColor="#ffcc66"
+            />
+          </div>
         )}
-        {codechefData && (
-          <RatingCard
-            platformName="CODECHEF"
-            platformIcon={codechefIcon}
-            username={codechefUsername}
-            rating={codechefData.rating}
-            ratingChange={codechefData.ratingChange}
-            lastRank={codechefData.lastRank}
-            userStar={codechefData.userStar}
-            outerColor="red.200"
-          />
-        )}
-        {atcoderUsername && (
-          <RatingCard
-            platformName="ATCODER"
-            platformIcon={atcoderIcon}
-            username={atcoderUsername}
-            rating={1223}
-            ratingChange={-56}
-            lastRank={11208}
-            userRank="MASTER"
-            outerColor="#E2E8F0"
-          />
-        )}
-        {leetcodeData && (
-          <RatingCard
-            platformName="LEETCODE"
-            platformIcon={leetcodeIcon}
-            username={leetcodeUsername}
-            rating={leetcodeData.rating}
-            ratingChange={leetcodeData.ratingChange}
-            lastRank={leetcodeData.lastRank}
-            userRank={leetcodeData.userRank}
-            outerColor="#ffcc66"
-          />
-        )}
+      </Box>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        <p>{getLastUpdatedMessage()}</p>
+        <Button
+          isLoading={isLoading}
+          loadingText="Fetching..."
+          variant="outline"
+          w={"fit-content"}
+          onClick={() => setFetchData(true)}
+        >
+          Fetch Data{" "}
+          {!codeforcesData && !codechefData && !leetcodeData ? "" : "again"}
+        </Button>
       </div>
-    </Box>
+    </>
   );
 }
 

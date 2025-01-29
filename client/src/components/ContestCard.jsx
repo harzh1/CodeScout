@@ -64,7 +64,7 @@ function ContestCard({
         <Text color={platformColor}> {platformName}</Text>
       </CardHeader>
       <CardBody p={1}>
-        <Text as="h3" size="md" fontWeight="bold">
+        <Text as="h3" size="md" fontWeight="semibold">
           {contestName}
         </Text>
       </CardBody>
