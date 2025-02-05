@@ -17,6 +17,8 @@ import {
 const NavLinks = ({ handleButtonClick }) => {
   const [activeButton, setActiveButton] = useState("Home");
   const location = useLocation(); // Get the current location
+  const token = localStorage.getItem("token");
+  const isLoggedin = !!token; // Correctly check if logged in or not
 
   // Update active button when the location (URL) changes
   useEffect(() => {
@@ -33,26 +35,55 @@ const NavLinks = ({ handleButtonClick }) => {
       setActiveButton("Login");
     } else if (path === "/signup") {
       setActiveButton("Signup");
-    }
-    else if (path === "/ProfilePage") {
+    } else if (path === "/ProfilePage") {
       setActiveButton("ProfilePage");
     }
-
   }, [location]); // This effect runs every time the location changes
+
+  const handleButtonClickInternal = (button) => {
+    setActiveButton(button);
+    handleButtonClick(button); // Call the passed function
+  };
+
+  const clearRatingData = () => {
+    // Clear platform usernames
+    localStorage.removeItem("codeforcesUsername");
+    localStorage.removeItem("codechefUsername");
+    localStorage.removeItem("atcoderUsername");
+    localStorage.removeItem("leetcodeUsername");
+
+    // Clear cached platform data
+    localStorage.removeItem("codeforcesData");
+    localStorage.removeItem("codechefData");
+    localStorage.removeItem("leetcodeData");
+  };
+
+  const handleSignOut = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    clearRatingData();
+
+    window.location.reload();
+  };
 
   return (
     <>
       <div className="navlinks">
         <div style={{ marginBottom: "10px", height: "60px" }}>
           <h1>
-            <NavLink to="/" onClick={() => handleButtonClick("Home")}>
+            <NavLink to="/" onClick={() => handleButtonClickInternal("Home")}>
               CodeScout
             </NavLink>
           </h1>
         </div>
         <div>
-          <Stack direction="row" spacing={4} align="center" position={"relative"}>
-            <NavLink to={`/`} onClick={() => handleButtonClick("Home")}>
+          <Stack
+            direction="row"
+            spacing={4}
+            align="center"
+            position={"relative"}
+          >
+            <NavLink to={`/`} onClick={() => handleButtonClickInternal("Home")}>
               <Button
                 colorScheme="teal"
                 variant={activeButton === "Home" ? "solid" : "outline"}
@@ -61,7 +92,10 @@ const NavLinks = ({ handleButtonClick }) => {
               </Button>
             </NavLink>
 
-            <NavLink to={`/Practice`} onClick={() => handleButtonClick("Practice")}>
+            <NavLink
+              to={`/Practice`}
+              onClick={() => handleButtonClickInternal("Practice")}
+            >
               <Button
                 colorScheme="teal"
                 variant={activeButton === "Practice" ? "solid" : "outline"}
@@ -70,23 +104,33 @@ const NavLinks = ({ handleButtonClick }) => {
               </Button>
             </NavLink>
 
-            <NavLink to={`/Ratedquestions`} onClick={() => handleButtonClick("RatedQuestions")}>
+            <NavLink
+              to={`/Ratedquestions`}
+              onClick={() => handleButtonClickInternal("RatedQuestions")}
+            >
               <Button
                 colorScheme="teal"
-                variant={activeButton === "RatedQuestions" ? "solid" : "outline"}
+                variant={
+                  activeButton === "RatedQuestions" ? "solid" : "outline"
+                }
               >
                 RatedQuestions
               </Button>
             </NavLink>
-            
-            <NavLink to={`/Login`} onClick={() => handleButtonClick("Login")}>
-              <Button
-                colorScheme="teal"
-                variant={activeButton === "Login" ? "solid" : "outline"}
+
+            {!isLoggedin && (
+              <NavLink
+                to={`/Login`}
+                onClick={() => handleButtonClickInternal("Login")}
               >
-                Login/Signup
-              </Button>
-            </NavLink>
+                <Button
+                  colorScheme="teal"
+                  variant={activeButton === "Login" ? "solid" : "outline"}
+                >
+                  Login
+                </Button>
+              </NavLink>
+            )}
 
             <Menu>
               <MenuButton as={Button} colorScheme="white">
@@ -101,12 +145,15 @@ const NavLinks = ({ handleButtonClick }) => {
               </MenuButton>
               <MenuList>
                 <MenuGroup title="Profile">
-                  <NavLink to={`/ProfilePage`} onClick={() => handleButtonClick("ProfilePage")}>
-                  <MenuItem >My Account</MenuItem>
+                  <NavLink
+                    to={`/ProfilePage`}
+                    onClick={() => handleButtonClickInternal("ProfilePage")}
+                  >
+                    <MenuItem>My Account</MenuItem>
                   </NavLink>
-                  
+
                   <MenuItem>Settings</MenuItem>
-                  <MenuItem color="red.500"> 
+                  <MenuItem color="red.500" onClick={handleSignOut}>
                     Log Out
                     <Box as="span" ml="2">
                       <MdLogout />

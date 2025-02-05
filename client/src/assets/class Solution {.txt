@@ -1,0 +1,35 @@
+class Solution {
+public:
+    bool canChange(string st, string tar) {
+        vector<pair<char,int>>v1,v2;
+
+        for(int i=0;i<st.size();i++){
+            if(st[i]!='_'){
+                v1.push_back({st[i],i});
+            }
+        }
+
+        for(int i=0;i<tar.size();i++){
+            if(tar[i]!='_'){
+                v2.push_back({tar[i],i});
+            }
+        }
+
+        if(v1.size()!=v2.size())return false;
+
+        for(int i=0;i<v1.size();i++){
+            char s = v1[i].first;
+            char t = v2[i].first;
+            int sind = v1[i].second;
+            int tind = v2[i].second;
+            
+            if(s!=t)return false;
+            if(s=='R'&&sind>tind)return false;
+            else if(s=='L'&&sind<tind)return false;
+        }
+
+        return true;
+
+
+    }
+};
