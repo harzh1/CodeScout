@@ -62,7 +62,15 @@ const LoginPage = () => {
 
   const handleGoogleLogin = () => {
     // Google login logic here
-    window.location.href = "https://accounts.google.com/signin/oauth"; // Example URL for Google OAuth
+    const frontendRedirectURI = encodeURIComponent(
+      window.location.origin + "/oauth/callback"
+    );
+
+    window.location.href = `${domain}/api/users/google?redirect_uri=${frontendRedirectURI}`;
+    console.log(
+      "Google login URL:",
+      `${domain}/api/users/google?redirect_uri=${frontendRedirectURI}`
+    );
   };
 
   return (

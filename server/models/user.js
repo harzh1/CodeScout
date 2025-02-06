@@ -13,7 +13,7 @@ const userSchema = new Schema(
         return !this.googleId && !this.githubId; // Password required if not using Google or GitHub login
       },
     },
-    googleId: { type: String, required: false },
+    googleId: { type: String, unique: true, required: false },
     githubId: { type: String, required: false },
     image: { type: String, required: false },
     codingPlatforms: [

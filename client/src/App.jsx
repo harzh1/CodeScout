@@ -10,12 +10,13 @@ import LoginPage from "./components/Loginpage";
 import SignupPage from "./components/SignupPage"; // Import Signup component
 import { useLocation } from "react-router-dom";
 import ProfilePage from "./components/ProfilePage";
+import OAuthCallback from "./components/OAuthCallback";
 
 function App() {
   const [activeButton, setActiveButton] = useState("Home");
   const location = useLocation(); // Get the current location
 
-  const token = localStorage.getItem("token");
+  //const token = localStorage.getItem("token");
 
   // Update active button when the location (URL) changes
   useEffect(() => {
@@ -54,6 +55,7 @@ function App() {
             <Route path="/pp" element={<ProfilePage />} />
             <Route path="/" element={<Container />} />
             <Route path="/Practice" element={<Practice />} />
+            <Route path="/oauth/callback" element={<OAuthCallback />} />
             <Route path="/Ratedquestions" element={<RatedQuestions />} />
             <Route path="/ProfilePage" element={<ProfilePage />} />
             <Route path="/signup" element={<SignupPage />} />

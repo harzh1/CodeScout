@@ -44,7 +44,7 @@ function ProfilePage() {
   };
 
   const handleSaveChanges = async () => {
-    const token = localStorage.getItem("token"); // Get the token from localStorage
+    const token = localStorage.getItem("token");
 
     try {
       for (const platform in usernames) {
