@@ -13,6 +13,8 @@ import usersRouter from "./routes/users.js";
 import mongoose from "mongoose";
 import cors from "cors";
 import connectDB from "./connectDB.js";
+import passport from "passport"; // Import passport
+import "./config/passportConfig.js";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -51,6 +53,7 @@ app.use(compression()); //Compress all routes
 app.use(express.static(path.join(__dirname, "public")));
 
 // app.use("/", indexRouter);
+app.use(passport.initialize());
 app.use("/api/users", usersRouter);
 
 app.use((req, res, next) => {

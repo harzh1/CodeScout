@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { MdLogout } from "react-icons/md";
 import { NavLink, useLocation } from "react-router-dom";
 import { Button, Stack } from "@chakra-ui/react";

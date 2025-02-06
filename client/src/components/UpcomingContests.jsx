@@ -124,7 +124,7 @@ function UpcomingContests() {
   }, []);
 
   return (
-    <div className="upcoming-contests" mt={0}>
+    <div className="upcoming-contests">
       <Tabs position="relative" variant="unstyled">
         <TabList>
           <Tab>Today</Tab>

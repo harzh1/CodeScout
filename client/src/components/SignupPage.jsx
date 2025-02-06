@@ -65,8 +65,11 @@ const SignupPage = () => {
   };
 
   const handleGoogleSignup = () => {
-    // Google sign-up logic here
-    window.location.href = "https://accounts.google.com/signin/oauth"; // Example URL
+    const frontendRedirectURI = encodeURIComponent(
+      window.location.origin + "/oauth/callback"
+    );
+
+    window.location.href = `${domain}/api/users/google?redirect_uri=${frontendRedirectURI}`; // Example URL for Google OAuth
   };
 
   return (
