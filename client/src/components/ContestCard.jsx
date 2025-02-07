@@ -64,7 +64,7 @@ function ContestCard({
         <Text color={platformColor}> {platformName}</Text>
       </CardHeader>
       <CardBody p={1}>
-        <Text as="h3" size="md" fontWeight="bold">
+        <Text as="h3" size="md" fontWeight="semibold">
           {contestName}
         </Text>
       </CardBody>
@@ -100,8 +100,8 @@ function ContestCard({
 ContestCard.propTypes = {
   platformName: PropTypes.string.isRequired,
   contestName: PropTypes.string.isRequired,
-  startTime: PropTypes.string.isRequired,
-  endTime: PropTypes.string.isRequired,
+  startTime: PropTypes.instanceOf(Date).isRequired,
+  endTime: PropTypes.instanceOf(Date).isRequired,
   registerLink: PropTypes.string.isRequired,
 };
 

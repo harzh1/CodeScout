@@ -49,7 +49,7 @@ function RatingCard({
           )}
 
           {/* Platform Name */}
-          <Text fontSize="xl" fontWeight="bold" color="black">
+          <Text fontSize="xl" color="black">
             {platformName}
           </Text>
         </HStack>
@@ -59,17 +59,9 @@ function RatingCard({
       </Box>
 
       {/* User Rank */}
-      {userRank && (
-        <Text fontSize="4xl" fontWeight="bold">
-          {userRank}
-        </Text>
-      )}
+      {userRank && <Text fontSize="3xl">{userRank}</Text>}
 
-      {userStar && (
-        <Text fontSize="4xl" fontWeight="bold">
-          {star}
-        </Text>
-      )}
+      {userStar && <Text fontSize="3xl">{star}</Text>}
 
       <HStack
         display="flex"
@@ -78,7 +70,7 @@ function RatingCard({
         alignItems="center"
       >
         {/* Rating and Rating Change */}
-        <Text fontSize="lg" color="gray.600" fontWeight="bold">
+        <Text fontSize="lg" color="gray.600" fontWeight="semibold">
           RATING {rating} [{ratingChange}]
         </Text>
 
@@ -93,20 +85,20 @@ function RatingCard({
   );
 }
 
-RatingCard.propTypes = {
-  platformName: PropTypes.string.isRequired,
-  platformIcon: PropTypes.string,
-  username: PropTypes.string.isRequired,
-  rating: PropTypes.number.isRequired,
-  ratingChange: PropTypes.number.isRequired,
-  lastRank: PropTypes.number.isRequired,
-  userRank: PropTypes.string,
-  userStar: PropTypes.number,
-  outerColor: PropTypes.string.isRequired, // Single color input for outer gradient
-};
+// RatingCard.propTypes = {
+//   platformName: PropTypes.string.isRequired,
+//   platformIcon: PropTypes.string,
+//   username: PropTypes.string.isRequired,
+//   rating: PropTypes.number.isRequired,
+//   ratingChange: PropTypes.number.isRequired,
+//   lastRank: PropTypes.number,
+//   userRank: PropTypes.string,
+//   userStar: PropTypes.number,
+//   outerColor: PropTypes.string.isRequired, // Single color input for outer gradient
+// };
 
-RatingCard.defaultProps = {
-  platformIcon: "", // Default to an empty string if no icon is provided
-};
+// RatingCard.defaultProps = {
+//   platformIcon: "", // Default to an empty string if no icon is provided
+// };
 
 export default RatingCard;

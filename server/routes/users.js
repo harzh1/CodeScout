@@ -3,6 +3,7 @@ const router = express.Router();
 import { check } from "express-validator";
 import * as users_controller from "../controllers/usersController.js";
 import checkAuth from "../middleware/checkAuth.js";
+import passport from "passport";
 
 /* GET users listing. */
 router.get("/", function (req, res, next) {
@@ -18,6 +19,10 @@ router.post(
   ],
   users_controller.signup
 );
+
+router.get("/google", users_controller.googleAuth);
+
+router.get("/google/callback", users_controller.googleAuthCallback);
 
 router.post("/login", users_controller.login);
 

@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
 import CodingPlatform from "../models/codingPlatform.js";
+import passport from "passport";
 
 export const signup = asyncHandler(async (req, res, next) => {
   console.log("Request body:", req.body);
@@ -67,6 +68,46 @@ export const signup = asyncHandler(async (req, res, next) => {
 
   res.status(201).json({ userId: newUser.id, email: newUser.email, token });
 });
+
+export const googleAuth = (req, res, next) => {
+  const redirect_uri = req.query.redirect_uri;
+  if (!redirect_uri) {
+    return res.status(400).json({ message: "Missing redirect URI" });
+  }
+
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    state: encodeURIComponent(redirect_uri), // Store redirect_uri in state
+  })(req, res, next);
+};
+
+export const googleAuthCallback = (req, res, next) => {
+  const redirect_uri = req.query.state
+    ? decodeURIComponent(req.query.state)
+    : null; // Retrieve from state
+
+  passport.authenticate("google", { session: false }, async (err, user) => {
+    if (err || !user) {
+      console.log("Error:", err);
+      return res.status(401).json({ message: "Authentication failed" });
+    }
+
+    const token = jwt.sign(
+      { userId: user.id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    console.log("Redirect URI:", redirect_uri);
+
+    if (!redirect_uri) {
+      return res.status(400).json({ message: "Missing redirect URI" });
+    }
+
+    // Redirect to the provided frontend URL
+    res.redirect(`${redirect_uri}?token=${token}`);
+  })(req, res, next);
+};
 
 export const login = asyncHandler(async (req, res, next) => {
   console.log("Request body:", req.body);
@@ -185,7 +226,7 @@ export const getUserPlatforms = asyncHandler(async (req, res, next) => {
       err.status = 404;
       return next(err);
     }
-    
+
     res.json(user.codingPlatforms);
   } catch (error) {
     const err = new Error("Could not fetch platforms");
@@ -193,5 +234,3 @@ export const getUserPlatforms = asyncHandler(async (req, res, next) => {
     return next(err);
   }
 });
-
-

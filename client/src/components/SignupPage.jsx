@@ -19,6 +19,7 @@ const SignupPage = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const domain = import.meta.env.VITE_APP_DOMAIN;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,7 +27,7 @@ const SignupPage = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3000/api/users/signup", {
+      const response = await fetch(`${domain}/api/users/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -64,8 +65,11 @@ const SignupPage = () => {
   };
 
   const handleGoogleSignup = () => {
-    // Google sign-up logic here
-    window.location.href = "https://accounts.google.com/signin/oauth"; // Example URL
+    const frontendRedirectURI = encodeURIComponent(
+      window.location.origin + "/oauth/callback"
+    );
+
+    window.location.href = `${domain}/api/users/google?redirect_uri=${frontendRedirectURI}`; // Example URL for Google OAuth
   };
 
   return (

@@ -57,7 +57,11 @@
   align-items: center;
   overflow-x: auto;
   max-width: 100%;
-  scrollbar-width: none;
+  scrollbar-width: none; /* For Firefox */
+}
+
+.ratingContainer::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Opera */
 }
 
 .ratings {
@@ -146,8 +150,8 @@
   align-items: center;
   background-color: aqua;
 }
-.navlinks{
-  display:flex;
+.navlinks {
+  display: flex;
   align-items: center;
-  justify-content:space-between;
+  justify-content: space-between;
 }
