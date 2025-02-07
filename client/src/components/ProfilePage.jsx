@@ -46,6 +46,11 @@ function ProfilePage() {
   const handleSaveChanges = async () => {
     const token = localStorage.getItem("token");
 
+    if (!userId) {
+      console.error("Error: User ID is null.");
+      return;
+    }
+
     try {
       for (const platform in usernames) {
         if (usernames[platform] !== initialUsernames[platform]) {
