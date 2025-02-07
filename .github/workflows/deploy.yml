@@ -3,7 +3,10 @@ name: Deploy React App
 on:
   push:
     branches:
-      - main  # Change this if your main branch has a different name
+      - main  # Change if your branch is different
+
+permissions:
+  contents: write
 
 jobs:
   build-and-deploy:
@@ -20,22 +23,18 @@ jobs:
 
       - name: Install Dependencies
         run: npm install
-        working-directory: client  # Ensures we install dependencies inside the client folder
+        working-directory: client
 
       - name: Create .env File
-        run: |
-          echo "VITE_APP_DOMAIN=${{ secrets.VITE_APP_DOMAIN }}" > client/.env
-          cat client/.env  # Debugging step to confirm .env is created
+        run: echo "VITE_APP_DOMAIN=${{ secrets.VITE_APP_DOMAIN }}" > client/.env
 
       - name: Build Project
         run: npm run build
-        working-directory: client  # Builds the Vite project
-
-      - name: Check If Build Folder Exists
-        run: ls -la client/dist  # Debugging step to check if dist folder is created
+        working-directory: client
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: client/dist  # Make sure this matches Vite's build output
+          folder: client/dist
+          clean: true
