@@ -7,11 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "preview": "vite preview"
   },
-  "homepage": "https://harzh1.github.io/CodeScout",
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.9.1",
