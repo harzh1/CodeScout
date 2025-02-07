@@ -17,10 +17,15 @@ const theme = extendTheme({
   },
 });
 
+const isGitHubPages = window.location.hostname.includes("github.io");
+const repoName = "CodeScout"; // Change this if your repo name is different
+
+const basename = isGitHubPages ? `/${repoName}` : "";
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ChakraProvider theme={theme}>
-      <BrowserRouter>
+      <BrowserRouter basename={basename}>
         <App />
       </BrowserRouter>
     </ChakraProvider>
