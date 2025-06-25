@@ -167,7 +167,7 @@ export const getUser = asyncHandler(async (req, res, next) => {
 
 export const updateUsername = asyncHandler(async (req, res, next) => {
   const userId = req.params.id; // userId from URL params
-  const { platformUrl, newUsername } = req.body;
+  const { platformUrl, newUsername, firstName, lastName, profileUpdate, platformUpdate } = req.body;
 
   try {
     const user = await User.findById(userId).populate("codingPlatforms");
@@ -178,34 +178,74 @@ export const updateUsername = asyncHandler(async (req, res, next) => {
     }
 
     console.log("User:", user);
-    console.log("Platform name:", platformUrl);
+    console.log("Request body:", req.body);
 
-    let platform = user.codingPlatforms.find(
-      (platform) =>
-        platform.platformUrl.toLowerCase() === platformUrl.toLowerCase()
-    );
-
-    if (platform) {
-      platform.username = newUsername;
-      await platform.save();
-      return res
-        .status(200)
-        .json({ message: "Platform username updated successfully", platform });
-    } else {
-      console.log("correct platform");
-      const newPlatform = new CodingPlatform({
-        username: newUsername,
-        platformUrl: platformUrl,
-      });
-
-      const savedPlatform = await newPlatform.save();
-
-      user.codingPlatforms.push(savedPlatform);
+    // Handle profile updates (firstName, lastName)
+    if (profileUpdate || (firstName !== undefined || lastName !== undefined) && !platformUpdate) {
+      console.log("Handling profile update");
+      
+      if (firstName !== undefined) {
+        user.firstName = firstName;
+      }
+      if (lastName !== undefined) {
+        user.lastName = lastName;
+      }
+      
       await user.save();
-      res.json(user);
+      return res.status(200).json({ 
+        message: "Profile updated successfully", 
+        user: {
+          id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email
+        }
+      });
     }
+
+    // Handle platform updates (existing logic)
+    if (platformUpdate || (platformUrl && newUsername !== undefined)) {
+      console.log("Handling platform update");
+      console.log("Platform URL:", platformUrl);
+      console.log("New Username:", newUsername);
+
+      let platform = user.codingPlatforms.find(
+        (platform) =>
+          platform.platformUrl.toLowerCase() === platformUrl.toLowerCase()
+      );
+
+      if (platform) {
+        platform.username = newUsername;
+        await platform.save();
+        return res
+          .status(200)
+          .json({ message: "Platform username updated successfully", platform });
+      } else {
+        console.log("Creating new platform");
+        const newPlatform = new CodingPlatform({
+          username: newUsername,
+          platformUrl: platformUrl,
+        });
+
+        const savedPlatform = await newPlatform.save();
+
+        user.codingPlatforms.push(savedPlatform);
+        await user.save();
+        return res.status(200).json({ 
+          message: "Platform username added successfully", 
+          platform: savedPlatform 
+        });
+      }
+    }
+
+    // If neither profile nor platform data is provided
+    const err = new Error("Invalid update request. Please provide either profile data (firstName, lastName) or platform data (platformUrl, newUsername)");
+    err.status = 400;
+    return next(err);
+
   } catch (error) {
-    const err = new Error("Could not update username");
+    console.error("Update error:", error);
+    const err = new Error("Could not update user data");
     err.status = 500;
     return next(err);
   }
