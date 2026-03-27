@@ -6,6 +6,47 @@ import { validationResult } from "express-validator";
 import CodingPlatform from "../models/codingPlatform.js";
 import passport from "passport";
 
+const getAllowedRedirectOrigins = () => {
+  const origins = [];
+  if (process.env.FRONTEND_URL) {
+    try {
+      origins.push(new URL(process.env.FRONTEND_URL).origin);
+    } catch {
+      // Ignore invalid FRONTEND_URL
+    }
+  }
+  if (process.env.ALLOWED_REDIRECT_ORIGINS) {
+    process.env.ALLOWED_REDIRECT_ORIGINS.split(",")
+      .map((o) => o.trim())
+      .filter(Boolean)
+      .forEach((o) => {
+        try {
+          origins.push(new URL(o).origin);
+        } catch {
+          // Ignore invalid origin entry
+        }
+      });
+  }
+  if (origins.length === 0) {
+    origins.push(
+      "https://codescout-v2.onrender.com",
+      "http://localhost:5173",
+      "http://localhost:3000"
+    );
+  }
+  return Array.from(new Set(origins));
+};
+
+const isAllowedRedirect = (redirectUri) => {
+  try {
+    const url = new URL(redirectUri);
+    const allowed = getAllowedRedirectOrigins();
+    return allowed.includes(url.origin);
+  } catch {
+    return false;
+  }
+};
+
 export const signup = asyncHandler(async (req, res, next) => {
   console.log("Request body:", req.body);
   const errors = validationResult(req);
@@ -74,6 +115,9 @@ export const googleAuth = (req, res, next) => {
   if (!redirect_uri) {
     return res.status(400).json({ message: "Missing redirect URI" });
   }
+  if (!isAllowedRedirect(redirect_uri)) {
+    return res.status(400).json({ message: "Invalid redirect URI" });
+  }
 
   passport.authenticate("google", {
     scope: ["profile", "email"],
@@ -103,6 +147,9 @@ export const googleAuthCallback = (req, res, next) => {
     if (!redirect_uri) {
       return res.status(400).json({ message: "Missing redirect URI" });
     }
+    if (!isAllowedRedirect(redirect_uri)) {
+      return res.status(400).json({ message: "Invalid redirect URI" });
+    }
 
     // Redirect to the provided frontend URL
     res.redirect(`${redirect_uri}?token=${token}`);
@@ -115,6 +162,11 @@ export const login = asyncHandler(async (req, res, next) => {
 
   const user = await User.findOne({ email });
   if (!user) {
+    const err = new Error("Invalid email or password");
+    err.status = 401;
+    return next(err);
+  }
+  if (!user.password) {
     const err = new Error("Invalid email or password");
     err.status = 401;
     return next(err);
@@ -205,6 +257,11 @@ export const updateUsername = asyncHandler(async (req, res, next) => {
 
     // Handle platform updates (existing logic)
     if (platformUpdate || (platformUrl && newUsername !== undefined)) {
+      if (!platformUrl || newUsername === undefined) {
+        const err = new Error("Platform update requires platformUrl and newUsername");
+        err.status = 400;
+        return next(err);
+      }
       console.log("Handling platform update");
       console.log("Platform URL:", platformUrl);
       console.log("New Username:", newUsername);
@@ -270,6 +327,35 @@ export const getUserPlatforms = asyncHandler(async (req, res, next) => {
     res.json(user.codingPlatforms);
   } catch (error) {
     const err = new Error("Could not fetch platforms");
+    err.status = 500;
+    return next(err);
+  }
+});
+
+export const deleteUser = asyncHandler(async (req, res, next) => {
+  const userId = req.params.id;
+
+  if (req.userData?.userId !== userId) {
+    const err = new Error("Not authorized to delete this user");
+    err.status = 403;
+    return next(err);
+  }
+
+  const user = await User.findById(userId);
+  if (!user) {
+    const err = new Error("User not found");
+    err.status = 404;
+    return next(err);
+  }
+
+  try {
+    if (user.codingPlatforms && user.codingPlatforms.length > 0) {
+      await CodingPlatform.deleteMany({ _id: { $in: user.codingPlatforms } });
+    }
+    await User.findByIdAndDelete(userId);
+    res.json({ message: "User deleted" });
+  } catch (error) {
+    const err = new Error("Could not delete user");
     err.status = 500;
     return next(err);
   }

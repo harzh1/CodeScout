@@ -57,6 +57,10 @@ app.use(passport.initialize());
 app.use("/api/users", usersRouter);
 
 app.use((req, res, next) => {
+  // Only serve SPA for non-API GET routes
+  if (req.method !== "GET" || req.path.startsWith("/api/")) {
+    return next();
+  }
   res.sendFile(path.resolve(__dirname, "build", "index.html"));
 });
 

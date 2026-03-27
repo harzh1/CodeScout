@@ -32,4 +32,6 @@ router.patch("/:id", checkAuth, users_controller.updateUsername);
 
 router.get("/:id/platforms", checkAuth, users_controller.getUserPlatforms);
 
+router.delete("/:id", checkAuth, users_controller.deleteUser);
+
 export default router;
